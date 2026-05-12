@@ -52,6 +52,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('remote-frame', data);
   });
 
+  // Forward mouse/keyboard inputs from admin to operator
+  socket.on('remote-input', (data) => {
+    socket.broadcast.emit('remote-input', data);
+  });
+
   socket.on('disconnect', () => {
     console.log('❌ Cliente desconectado');
   });

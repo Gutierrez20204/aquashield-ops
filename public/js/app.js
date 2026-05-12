@@ -448,68 +448,63 @@ async function renderLogs() {
 }
 
 // ---- REMOTE OPERATIONS ----
-// ---- REMOTE OPERATIONS ----
 async function renderRemote() {
-  const swList = document.getElementById('softwareList');
   const workspace = document.getElementById('remoteWorkspace');
-  if (!swList || !workspace) return;
+  if (!workspace) return;
 
-  // Check role
   const userStr = sessionStorage.getItem('as_user');
   const user = userStr ? JSON.parse(userStr) : {};
   const isOperator = user.role === 'operator';
 
   if (isOperator) {
-    // OPERATOR VIEW: Show info to send to admin
     workspace.innerHTML = `
       <div style="text-align: center; padding: 2rem; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);">
         <div style="font-size: 3rem; margin-bottom: 1.5rem;">📡</div>
         <h2 style="font-family:'Outfit'; color:#fff; letter-spacing:0.1em; margin-bottom:0.5rem;">TU ESTACIÓN ESTÁ LISTA</h2>
         <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 3rem;">Pásale estos datos a tu Administrador para que pueda conectar con este equipo.</p>
-        
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%; max-width: 500px;">
-          <div class="bento-item" style="padding: 1.5rem; background: rgba(0,255,170,0.05); border: 1px solid rgba(0,255,170,0.1);">
-            <div class="bento-label" style="margin-bottom:0.5rem;">TU IP PÚBLICA</div>
-            <div id="opIP" style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">detectando...</div>
-          </div>
-          <div class="bento-item" style="padding: 1.5rem; background: rgba(255,255,255,0.05);">
-            <div class="bento-label" style="margin-bottom:0.5rem;">PUERTO SUGERIDO</div>
-            <div style="font-size: 1.5rem; font-weight: 800; color: #fff;">6080</div>
-          </div>
+          <div class="bento-item" style="padding: 1.5rem; background: rgba(0,255,170,0.05); border: 1px solid rgba(0,255,170,0.1);"><div class="bento-label">IP PÚBLICA</div><div style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">181.143.220.12</div></div>
+          <div class="bento-item" style="padding: 1.5rem; background: rgba(255,255,255,0.05);"><div class="bento-label">PUERTO</div><div style="font-size: 1.5rem; font-weight: 800; color: #fff;">6080</div></div>
         </div>
-
-        <div class="bento-item" style="margin-top: 2rem; padding: 1.5rem; width: 100%; max-width: 500px; background: rgba(255,255,255,0.02);">
-           <div class="bento-label" style="margin-bottom:1rem;">DEFINE TU CLAVE DE ACCESO (VNC)</div>
-           <div style="display:flex; gap:1rem;">
-              <input type="text" id="opDefinedPass" value="shield2024" style="flex:1; background:#000; border:1px solid #333; padding:0.8rem; color:#fff; border-radius:8px; font-family:monospace; text-align:center; font-size:1.2rem;">
-              <button class="nav-item" style="padding:0 1.5rem; background:var(--accent); color:#000; font-weight:800;" onclick="toast('Clave configurada. Pásala al Admin.', 'success')">FIJAR</button>
-           </div>
-           <p style="font-size:0.6rem; color:#555; margin-top:1rem;">Esta es la clave que el Administrador deberá ingresar para ver tu pantalla.</p>
+        <button class="nav-item" style="margin-top:2rem; width:100%; max-width:500px; background:var(--accent); color:#000; font-weight:800; padding:1.5rem;" onclick="startLiveDemo()">🚀 ACTIVAR SEÑAL REMOTA</button>
+        <video id="liveVideoDemo" autoplay playsinline style="display:none;"></video>
+      </div>
+    `;
+  } else {
+    // ADMIN VIEW
+    workspace.innerHTML = `
+      <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #000; overflow: hidden;">
+        <div style="padding: 1rem; background: #111; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222;">
+           <div style="font-size: 0.75rem; font-weight: 800; color: var(--accent); font-family:'Outfit';">🛰️ ACCESO MAESTRO — ESTACIÓN BARRANQUILLA</div>
+           <button class="nav-item" style="padding: 0.5rem 1rem; font-size: 0.6rem; background: rgba(239, 68, 68, 0.1); color: #ef4444;" onclick="location.reload()">DESCONECTAR</button>
         </div>
-
-        <div class="bento-item" style="margin-top: 2rem; padding: 1.5rem; width: 100%; max-width: 500px; background: rgba(0,255,170,0.05); border: 1px solid var(--accent);">
-           <div class="bento-label" style="margin-bottom:1rem; color:var(--accent);">PRUEBA DE TRANSMISIÓN EN VIVO</div>
-           <p style="font-size:0.7rem; color:#888; margin-bottom:1.5rem;">Pulsa el botón para proyectar tu pantalla actual en el visor y verificar la fluidez del sistema.</p>
-           <button class="nav-item" style="width:100%; background:var(--accent); color:#000; font-weight:800; padding:1rem;" onclick="startLiveDemo()">🚀 COMPARTIR MI PANTALLA AHORA</button>
-           <video id="liveVideoDemo" autoplay playsinline style="display:none;"></video>
-        </div>
-
-        <div style="margin-top: 3rem; padding: 1rem; border: 1px dashed #333; border-radius: 10px; font-size: 0.65rem; color: #666; max-width: 400px;">
-           <div style="color:var(--accent); font-weight:800; margin-bottom:0.5rem;">ESTADO DEL PUENTE VNC:</div>
-           Recuerda que para que el Administrador vea tu pantalla, el software <strong>Websockify</strong> debe estar activo en este PC.
+        <div id="remoteContainer" style="flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; cursor: crosshair;">
+          <video id="remoteVideo" autoplay playsinline style="width:100%; height:100%; object-fit:contain;"></video>
+          <div id="remoteOverlay" style="position: absolute; inset: 0; z-index: 99;"></div>
         </div>
       </div>
     `;
-    
-    // Simulate IP detection
-    setTimeout(() => {
-      const ipElem = document.getElementById('opIP');
-      if (ipElem) ipElem.textContent = '181.143.220.12'; // Mock public IP
-    }, 1000);
 
-  } else {
-    // ADMIN VIEW: The previous remote desktop UI is already in dashboard.html
-    // We can reset the workspace if needed
+    const remoteVideo = document.getElementById('remoteVideo');
+    const remoteOverlay = document.getElementById('remoteOverlay');
+
+    socket.on('remote-frame', (data) => { remoteVideo.src = data; });
+
+    remoteOverlay.addEventListener('mousedown', (e) => {
+      const rect = remoteVideo.getBoundingClientRect();
+      socket.emit('remote-input', { type: 'click', x: (e.clientX - rect.left) / rect.width, y: (e.clientY - rect.top) / rect.height, button: e.button });
+    });
+
+    remoteOverlay.addEventListener('mousemove', (e) => {
+      if (Date.now() % 5 === 0) {
+        const rect = remoteVideo.getBoundingClientRect();
+        socket.emit('remote-input', { type: 'move', x: (e.clientX - rect.left) / rect.width, y: (e.clientY - rect.top) / rect.height });
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('page-remote').classList.contains('hidden')) return;
+      socket.emit('remote-input', { type: 'key', key: e.key });
   }
 
   // Common software list rendering
