@@ -417,7 +417,8 @@ async function saveClient() {
   }
 }
 
-async function editClient(id) {
+window.editClient = async function(id) {
+  console.log("Editando cliente:", id);
   try {
     const c = await apiFetch(`/api/clients/${id}`);
     document.getElementById('editClientId').value = c.id;
@@ -428,30 +429,30 @@ async function editClient(id) {
     document.getElementById('clientModalTitle').textContent = 'Editar Cliente';
     document.getElementById('newClientModal').classList.remove('hidden');
   } catch (e) { toast('Error al cargar datos', 'err'); }
-}
+};
 
-async function deleteClient(id) {
-  if (!confirm('¿Estás seguro de eliminar este cliente? Se borrarán sus datos asociados.')) return;
+window.deleteClient = async function(id) {
+  // Alerta de diagnóstico para verificar que el clic funciona
+  if (!confirm('¿ESTÁS SEGURO? Se borrarán todos los archivos y trabajos de este cliente de forma permanente.')) return;
+  
   try {
     const response = await fetch(`/api/clients/${id}`, { 
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${sessionStorage.getItem('as_token')}` }
     });
 
-    const data = await response.json();
-    
     if (response.ok) {
-      toast('✅ Cliente eliminado con éxito', 'success');
+      toast('✅ Cliente y datos eliminados', 'success');
       renderClients();
       renderDashboard();
     } else {
-      toast(`❌ Error del servidor: ${data.error || 'No se pudo borrar'}`, 'err');
+      const errData = await response.json();
+      toast(`❌ Error: ${errData.error || 'No permitido'}`, 'err');
     }
   } catch (e) { 
-    console.error("Error al borrar:", e);
-    toast('⚠️ Error de conexión con el núcleo', 'err'); 
+    toast('⚠️ Error de conexión', 'err'); 
   }
-}
+};
 
 async function renderClients() {
   try {
