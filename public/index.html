@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Agua Shield OPS — Sistema de Gestión y Acceso Remoto para Ploteo Vehicular" />
+  <title>Agua Shield OPS — Acceso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+  <!-- Particle canvas background -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Scan lines overlay -->
+  <div class="scanlines"></div>
+
+  <div class="login-container">
+    <!-- Left brand panel -->
+    <div class="brand-panel">
+      <div class="brand-glow"></div>
+      <div class="brand-content">
+        <div class="logo-wrapper">
+          <div class="logo-ring"></div>
+          <img src="logo.PNG" alt="Agua Shield Logo" class="brand-logo" id="brandLogo" />
+        </div>
+        <div class="brand-tagline">
+          <span class="brand-sub">SISTEMA OPERATIVO</span>
+          <h1 class="brand-title">Gestión & Control<br/><span class="highlight">Remoto</span></h1>
+          <p class="brand-desc">Control total de ploteo vehicular, acceso remoto seguro y gestión de cola de impresión desde cualquier lugar.</p>
+        </div>
+        <div class="brand-stats">
+          <div class="stat-item">
+            <span class="stat-num" id="statFiles">2,847</span>
+            <span class="stat-label">Archivos Procesados</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num" id="statJobs">1,203</span>
+            <span class="stat-label">Trabajos Completados</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num" id="statClients">89</span>
+            <span class="stat-label">Clientes Activos</span>
+          </div>
+        </div>
+        <div class="system-status">
+          <div class="status-dot pulse"></div>
+          <span>Servidor Activo — Barranquilla, Colombia</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right login panel -->
+    <div class="login-panel">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="lock-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h2>Acceso Seguro</h2>
+          <p>Ingresa tus credenciales para acceder al panel de control</p>
+        </div>
+
+        <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="username">Usuario</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input type="text" id="username" placeholder="usuario@aguashield.co" autocomplete="username" required />
+              <div class="input-glow"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input type="password" id="password" placeholder="••••••••••" autocomplete="current-password" required />
+              <button type="button" class="toggle-pass" id="togglePass" onclick="togglePassword()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+              <div class="input-glow"></div>
+            </div>
+          </div>
+
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="rememberMe" />
+              <span class="checkbox-custom"></span>
+              Recordar sesión
+            </label>
+            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+          </div>
+
+          <div class="login-alert" id="loginAlert"></div>
+
+          <button type="submit" class="btn-login" id="btnLogin">
+            <span class="btn-text">Iniciar Sesión</span>
+            <div class="btn-loader" id="btnLoader"></div>
+            <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+
+        <div class="login-footer">
+          <div class="security-badges">
+            <div class="badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              SSL Encriptado
+            </div>
+            <div class="badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              Sesión 24h
+            </div>
+            <div class="badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              Log en Tiempo Real
+            </div>
+          </div>
+          <p class="footer-copy">© 2026 Agua Shield · Sistema Operativo v2.1.0</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>
