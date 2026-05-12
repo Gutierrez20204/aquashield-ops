@@ -22,10 +22,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: (parseInt(process.env.MAX_FILE_SIZE_MB) || 500) * 1024 * 1024 },
+  limits: { fileSize: (parseInt(process.env.MAX_FILE_SIZE_MB) || 1000) * 1024 * 1024 }, // 1GB
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    ['.ai','.eps','.pdf','.svg'].includes(ext) ? cb(null, true) : cb(new Error('Tipo no permitido'));
+    const allowed = ['.ai','.eps','.pdf','.svg','.jpg','.png','.jpeg','.mp4','.mov','.zip'];
+    allowed.includes(ext) ? cb(null, true) : cb(new Error('Tipo de archivo no permitido: ' + ext));
   }
 });
 
@@ -48,17 +49,21 @@ router.get('/:id', requireAuth, (req, res) => {
   res.json(file);
 });
 
-router.post('/upload', requireAuth, upload.array('files', 20), (req, res) => {
-  if (!req.files?.length) return res.status(400).json({ error:'Sin archivos' });
-  const { client_id, project, notes } = req.body;
-  const results = req.files.map(f => {
-    const ext = path.extname(f.originalname).toLowerCase();
-    run('INSERT INTO files (filename,original,filetype,size_bytes,client_id,project,notes,uploaded_by) VALUES (?,?,?,?,?,?,?,?)',
-      [f.filename, f.originalname, ext, f.size, client_id||null, project||null, notes||null, req.user.id]);
-    run('INSERT INTO logs (level,message,user_id) VALUES (?,?,?)', ['info',`Archivo subido: ${f.originalname}`, req.user.id]);
-    return { filename: f.filename, original: f.originalname, size: f.size };
+router.post('/upload', requireAuth, (req, res) => {
+  upload.array('files', 20)(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.files?.length) return res.status(400).json({ error: 'Sin archivos' });
+
+    const { client_id, project, notes, brand_id } = req.body;
+    const results = req.files.map(f => {
+      const ext = path.extname(f.originalname).toLowerCase();
+      run('INSERT INTO files (filename,original,filetype,size_bytes,client_id,project,notes,uploaded_by,brand_id) VALUES (?,?,?,?,?,?,?,?,?)',
+        [f.filename, f.originalname, ext, f.size, client_id||null, project||null, notes||null, req.user.id, brand_id||null]);
+      run('INSERT INTO logs (level,message,user_id) VALUES (?,?,?)', ['info',`Archivo subido: ${f.originalname}`, req.user.id]);
+      return { filename: f.filename, original: f.originalname, size: f.size };
+    });
+    res.status(201).json({ uploaded: results.length, files: results });
   });
-  res.status(201).json({ uploaded: results.length, files: results });
 });
 
 router.patch('/:id/status', requireAuth, (req, res) => {
@@ -76,6 +81,16 @@ router.delete('/:id', requireAuth, (req, res) => {
   run('DELETE FROM files WHERE id=?', [req.params.id]);
   run('INSERT INTO logs (level,message,user_id) VALUES (?,?,?)', ['warn',`Archivo eliminado: ${file.original}`, req.user.id]);
   res.json({ message:'Archivo eliminado' });
+});
+
+router.get('/download/:id', requireAuth, (req, res) => {
+  const file = get('SELECT * FROM files WHERE id=?', [req.params.id]);
+  if (!file) return res.status(404).json({ error: 'Archivo no encontrado' });
+  
+  const filePath = path.join(UPLOAD_DIR, String(file.client_id || 'general'), file.filename);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'El archivo físico no existe en el servidor' });
+  
+  res.download(filePath, file.original);
 });
 
 module.exports = router;

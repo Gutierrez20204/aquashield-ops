@@ -64,12 +64,19 @@ const SCHEMA = `
     status     TEXT NOT NULL DEFAULT 'active',
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+  CREATE TABLE IF NOT EXISTS brands (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT NOT NULL UNIQUE,
+    icon       TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
   CREATE TABLE IF NOT EXISTS files (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     filename    TEXT NOT NULL,
     original    TEXT NOT NULL,
     filetype    TEXT NOT NULL,
     size_bytes  INTEGER NOT NULL,
+    brand_id    INTEGER,
     client_id   INTEGER,
     project     TEXT,
     notes       TEXT,
@@ -115,9 +122,9 @@ function seed() {
   const h = p => bcrypt.hashSync(p, 10);
   const now = new Date().toISOString().replace('T',' ').slice(0,19);
 
-  run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['admin',    h('admin123'),   'Administrador',  'admin',    'active', now]);
-  run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['operador', h('ops2026'),    'Carlos Ríos',    'operator', 'active', now]);
-  run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['diseno',   h('design2026'), 'Lucía Martínez', 'designer', 'active', now]);
+  run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['sam',          h('admin123'),  'Samuel Santiago', 'admin',    'active', now]);
+  run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['operador_baq', h('baq2024'),    'Estación BAQ',    'operator', 'active', now]);
+  run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['design_01',    h('design123'), 'Diseño Senior',   'designer', 'active', now]);
 
   const clients = [
     ['Carlos Mendoza','AutoGlass Baq','cmendoza@autoglass.co','3001234567','active'],
@@ -130,14 +137,17 @@ function seed() {
   ];
   clients.forEach(c => run(`INSERT INTO clients (name,company,email,phone,status) VALUES (?,?,?,?,?)`, c));
 
-  const files = [
-    ['bmw_x5_wrap.ai','BMW_X5_wrap.ai','.ai',25500000,1,'BMW X5 Wrap Completo','pending',1],
-    ['fordRanger_fullkit.eps','FordRanger_fullkit.eps','.eps',19600000,2,'Ford Ranger Kit Lateral','printing',2],
-    ['mazda3_diseno.ai','Mazda3_diseño.ai','.ai',12700000,3,'Mazda3 Diseño','done',3],
-    ['kia_sportage_vinilo.pdf','Kia_Sportage_vinilo.pdf','.pdf',9800000,4,'Kia Sportage Vinilo','done',2],
-    ['toyota_hilux_logo.svg','Toyota_Hilux_logo.svg','.svg',1200000,5,'Toyota Hilux Logo','pending',3],
+  const brands = [
+    ['BMW','🚗'], ['Toyota','🛻'], ['Ford','🚜'], ['Mercedes','🏎️'], ['Audi','🚘']
   ];
-  files.forEach(f => run(`INSERT INTO files (filename,original,filetype,size_bytes,client_id,project,status,uploaded_by) VALUES (?,?,?,?,?,?,?,?)`, f));
+  brands.forEach(b => run(`INSERT INTO brands (name,icon) VALUES (?,?)`, b));
+
+  const files = [
+    ['bmw_x5_wrap.ai','BMW_X5_wrap.ai','.ai',25500000,1,1,'BMW X5 Wrap Completo','pending',1],
+    ['fordRanger_fullkit.eps','FordRanger_fullkit.eps','.eps',19600000,3,2,'Ford Ranger Kit Lateral','printing',2],
+    ['toyota_hilux_logo.svg','Toyota_Hilux_logo.svg','.svg',1200000,2,5,'Toyota Hilux Logo','pending',3],
+  ];
+  files.forEach(f => run(`INSERT INTO files (filename,original,filetype,size_bytes,brand_id,client_id,project,status,uploaded_by) VALUES (?,?,?,?,?,?,?,?,?)`, f));
 
   [[2,1,'high','printing'],[1,2,'normal','queued'],[5,3,'urgent','queued'],[4,4,'normal','queued']].forEach(q =>
     run(`INSERT INTO queue (file_id,position,priority,status) VALUES (?,?,?,?)`, q));
@@ -150,7 +160,7 @@ function seed() {
     ['Error comunicación plotter',5,5,2,0,'error'],
   ].forEach(h2 => run(`INSERT INTO history (job_name,file_id,client_id,sent_by,duration_s,status) VALUES (?,?,?,?,?,?)`, h2));
 
-  run(`INSERT INTO logs (level,message,ip) VALUES (?,?,?)`, ['ok','Sistema iniciado — Agua Shield OPS v2.1','127.0.0.1']);
+  run(`INSERT INTO logs (level,message,ip) VALUES (?,?,?)`, ['ok','Sistema iniciado — Aqua Shield OPS v2.1','127.0.0.1']);
   run(`INSERT INTO logs (level,message,ip) VALUES (?,?,?)`, ['ok','Seed inicial completado','127.0.0.1']);
   console.log('✅ Base de datos sembrada.');
 }

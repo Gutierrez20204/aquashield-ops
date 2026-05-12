@@ -1,4 +1,4 @@
-// server.js — Agua Shield OPS · Node.js + Express + sql.js
+// server.js — Aqua Shield OPS · Node.js + Express + sql.js
 require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
@@ -9,8 +9,8 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -25,6 +25,7 @@ function loadRoutes() {
   app.use('/api/clients', require('./routes/clients'));
   app.use('/api/history', require('./routes/history'));
   app.use('/api/users',   require('./routes/users'));
+  app.use('/api/brands',  require('./routes/brands'));
   app.use('/api/logs',    require('./routes/logs'));
   app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
   app.use((err, req, res, next) => {
@@ -35,14 +36,38 @@ function loadRoutes() {
 }
 
 // Boot
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: { origin: "*" },
+  maxHttpBufferSize: 1e8 // Allow larger frames
+});
+
+io.on('connection', (socket) => {
+  console.log('🔗 Cliente conectado:', socket.id);
+  
+  // Forward screen frames from operator to admin
+  socket.on('screen-frame', (data) => {
+    socket.broadcast.emit('remote-frame', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('❌ Cliente desconectado');
+  });
+});
+
 db.init().then(() => {
   loadRoutes();
-  app.listen(PORT, () => {
+  server.keepAliveTimeout = 65000;
+  server.headersTimeout = 66000;
+  server.listen(PORT, () => {
     console.log(`
   ╔══════════════════════════════════════╗
-  ║  🛡  AGUA SHIELD OPS  v2.1.0         ║
+  ║  🛡  AQUA SHIELD OPS  v2.1.0         ║
   ║  📡  http://localhost:${PORT}           ║
   ║  🗄  SQLite · /db/aquashield.db       ║
+  ║  🚀  Real-time Tunnel Active         ║
   ╚══════════════════════════════════════╝
     `);
   });

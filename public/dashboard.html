@@ -3,380 +3,363 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agua Shield OPS — Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Aqua Shield OPS — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <img src="logo.PNG" alt="Agua Shield" class="side-logo-img" />
-    <div class="side-logo-text">
-      <span class="side-brand">AGUA SHIELD</span>
-      <span class="side-sub">OPS v2.1</span>
-    </div>
-  </div>
-
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Principal</div>
-    <a href="dashboard.html" class="nav-item active" id="nav-dashboard">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-      Dashboard
-    </a>
-    <a href="files.html" class="nav-item" id="nav-files">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-      Archivos
-    </a>
-    <a href="queue.html" class="nav-item" id="nav-queue">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-      Cola de Impresión
-    </a>
-    <a href="remote.html" class="nav-item" id="nav-remote">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-      Acceso Remoto
-    </a>
-
-    <div class="nav-section-label">Gestión</div>
-    <a href="clients.html" class="nav-item" id="nav-clients">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-      Clientes
-    </a>
-    <a href="history.html" class="nav-item" id="nav-history">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-      Historial
-    </a>
-    <a href="users.html" class="nav-item" id="nav-users">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      Usuarios
-    </a>
-    <a href="logs.html" class="nav-item" id="nav-logs">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-      Logs del Sistema
-    </a>
-  </nav>
-
-  <div class="sidebar-bottom">
-    <div class="plotter-status-widget" id="plotterWidget">
-      <div class="pw-header">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-        Estado del Plotter
-      </div>
-      <div class="pw-body">
-        <div class="pw-status online" id="plotterStatusDot">
-          <span class="dot"></span> En Línea
-        </div>
-        <div class="pw-detail" id="plotterDetail">Listo para imprimir</div>
+  <!-- TOP NAVIGATION -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <img src="logo-transparent.png" alt="Aqua Shield" class="nav-logo" />
+      <div class="nav-brand-text">
+        <span>AQUA SHIELD OPS</span>
+        <span id="pageTime" style="display: block; font-size: 0.6rem; color: var(--text-dim); font-weight: 500; margin-top: 2px;"></span>
       </div>
     </div>
-    <div class="sidebar-user" id="sidebarUser">
-      <div class="user-avatar" id="userAvatar">A</div>
-      <div class="user-info">
-        <span class="user-name" id="userName">Admin</span>
-        <span class="user-role" id="userRole">Administrador</span>
+    <div class="nav-links">
+      <a href="dashboard" class="nav-item spa-link active" id="nav-dashboard">Panel</a>
+      <a href="files" class="nav-item spa-link" id="nav-files">Archivos</a>
+      <a href="queue" class="nav-item spa-link" id="nav-queue">Cola</a>
+      <a href="remote" class="nav-item spa-link" id="nav-remote">Remoto</a>
+      <a href="clients" class="nav-item spa-link" id="nav-clients">Clientes</a>
+      <a href="settings" class="nav-item spa-link" id="nav-settings">⚙️ Ajustes</a>
+      <div class="breadcrumb">
+        <span class="bc-root">PANEL</span>
+        <span class="bc-sep">/</span>
+        <span id="pageTitle" class="bc-current">DASHBOARD PRINCIPAL</span>
       </div>
-      <button class="btn-logout" onclick="logout()" title="Cerrar Sesión">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-      </button>
-    </div>
-  </div>
-</aside>
-
-<!-- MAIN CONTENT -->
-<div class="main-wrapper">
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <button class="menu-toggle" onclick="toggleSidebar()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-    </button>
-    <div class="topbar-title">
-      <h2 id="pageTitle">Dashboard Principal</h2>
-      <span id="pageTime" class="topbar-time"></span>
     </div>
     <div class="topbar-right">
-      <div class="notification-bell" onclick="toggleNotifications()" id="notifBtn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-        <span class="notif-badge" id="notifBadge">3</span>
+      <div id="notif-bell" class="btn-icon" style="position:relative; border:none; background:none;">
+        <span style="font-size:1.2rem;">🔔</span>
+        <span id="notif-count" style="position:absolute; top:4px; right:4px; background:#ef4444; width:8px; height:8px; border-radius:50%; border:2px solid var(--bg);"></span>
       </div>
       <div class="topbar-connection">
-        <div class="conn-dot" id="connDot"></div>
-        <span id="connText">Conectado</span>
+        <div class="conn-dot"></div>
+        <div class="user-info-minimal">
+          <span id="userName" style="font-weight: 700; font-size: 0.8rem;">Admin</span>
+          <span id="userRole" style="font-size: 0.6rem; color: var(--text-dim); display: block;">Administrador</span>
+        </div>
+        <div id="userAvatar" style="width: 32px; height: 32px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; border: 1px solid var(--border);">A</div>
       </div>
+      <button onclick="logout()" class="btn-icon" style="border:none; background:rgba(239, 68, 68, 0.1); color:#ef4444; width:32px; height:32px; margin-left:0.5rem;" title="Cerrar Sesión">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
     </div>
-    <!-- Notifications dropdown -->
-    <div class="notif-dropdown" id="notifDropdown">
-      <div class="notif-header">Notificaciones</div>
-      <div class="notif-list" id="notifList"></div>
+  </nav>
+
+  <!-- BENTO DASHBOARD -->
+  <main class="bento-container" id="page-dashboard">
+    
+    <!-- Stats Row -->
+    <div class="bento-item item-stat-1">
+      <div class="bento-header">
+        <span class="bento-label">Archivos Totales</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bento-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      </div>
+      <span class="bento-value" id="stat-files">--</span>
+      <span class="bento-sub">+12 hoy</span>
     </div>
-  </header>
 
-  <!-- PAGE CONTENT -->
-  <main class="page-content" id="pageContent">
-
-    <!-- DASHBOARD PAGE -->
-    <div class="page" id="page-dashboard">
-      <!-- KPI Cards -->
-      <div class="kpi-grid">
-        <div class="kpi-card" data-color="blue">
-          <div class="kpi-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-          </div>
-          <div class="kpi-data">
-            <div class="kpi-num" data-count="247">247</div>
-            <div class="kpi-label">Archivos en Sistema</div>
-            <div class="kpi-change up">+12 hoy</div>
-          </div>
-        </div>
-        <div class="kpi-card" data-color="green">
-          <div class="kpi-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-          </div>
-          <div class="kpi-data">
-            <div class="kpi-num" data-count="8">8</div>
-            <div class="kpi-label">Trabajos en Cola</div>
-            <div class="kpi-change up">2 urgentes</div>
-          </div>
-        </div>
-        <div class="kpi-card" data-color="cyan">
-          <div class="kpi-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          </div>
-          <div class="kpi-data">
-            <div class="kpi-num" data-count="34">34</div>
-            <div class="kpi-label">Clientes Activos</div>
-            <div class="kpi-change up">+3 este mes</div>
-          </div>
-        </div>
-        <div class="kpi-card" data-color="orange">
-          <div class="kpi-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          </div>
-          <div class="kpi-data">
-            <div class="kpi-num" data-count="1203">1,203</div>
-            <div class="kpi-label">Trabajos Completados</div>
-            <div class="kpi-change up">+47 esta semana</div>
-          </div>
-        </div>
+    <div class="bento-item item-stat-2">
+      <div class="bento-header">
+        <span class="bento-label">En Cola</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bento-icon"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
       </div>
+      <span class="bento-value" id="stat-queue">--</span>
+      <span class="bento-sub">2 urgentes</span>
+    </div>
 
-      <!-- Middle Row -->
-      <div class="dash-row">
-        <!-- Queue Preview -->
-        <div class="dash-card flex-2">
-          <div class="card-header">
-            <h3>Cola de Impresión Activa</h3>
-            <a href="queue.html" class="card-link" onclick="navigateTo('queue')">Ver todo →</a>
-          </div>
-          <div class="queue-list" id="dashQueueList"></div>
-        </div>
-        <!-- Plotter Monitor -->
-        <div class="dash-card flex-1">
-          <div class="card-header"><h3>Estado del Plotter</h3></div>
-          <div class="plotter-monitor" id="plotterMonitor">
-            <div class="pm-ring">
-              <div class="pm-inner">
-                <div class="pm-percent" id="pmPercent">78%</div>
-                <div class="pm-sub">Uso Tinta</div>
-              </div>
-            </div>
-            <div class="pm-stats">
-              <div class="pm-stat"><span class="pm-stat-label">Modelo</span><span class="pm-stat-val">Roland BN-20</span></div>
-              <div class="pm-stat"><span class="pm-stat-label">Estado</span><span class="pm-stat-val green" id="pmState">En Línea</span></div>
-              <div class="pm-stat"><span class="pm-stat-label">Temperatura</span><span class="pm-stat-val" id="pmTemp">42°C</span></div>
-              <div class="pm-stat"><span class="pm-stat-label">Trabajo actual</span><span class="pm-stat-val" id="pmJob">Vinilo BMW X5</span></div>
-            </div>
-          </div>
-        </div>
+    <div class="bento-item item-stat-3">
+      <div class="bento-header">
+        <span class="bento-label">Clientes</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bento-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
       </div>
+      <span class="bento-value" id="stat-clients">--</span>
+      <span class="bento-sub">+3 este mes</span>
+    </div>
 
-      <!-- Bottom row -->
-      <div class="dash-row">
-        <!-- Recent Files -->
-        <div class="dash-card flex-1">
-          <div class="card-header"><h3>Archivos Recientes</h3><a href="files.html" class="card-link" onclick="navigateTo('files')">Ver todo →</a></div>
-          <div id="recentFilesList" class="recent-files-list"></div>
-        </div>
-        <!-- Activity Log -->
-        <div class="dash-card flex-1">
-          <div class="card-header"><h3>Actividad Reciente</h3></div>
-          <div class="activity-feed" id="activityFeed"></div>
-        </div>
+    <!-- Active Queue -->
+    <div class="bento-item item-queue">
+      <div class="card-header">
+        <h3 class="card-title">Cola de Impresión Activa</h3>
+        <button class="btn-primary" onclick="uploadFile()" style="padding: 0.5rem 1rem; border-radius: 8px;">Subir</button>
+      </div>
+      <div class="bento-list" id="dashQueueList">
+        <!-- JS Loaded -->
       </div>
     </div>
 
-    <!-- FILES PAGE -->
-    <div class="page hidden" id="page-files">
-      <div class="page-toolbar">
-        <div class="toolbar-left">
-          <div class="search-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="fileSearch" placeholder="Buscar archivos..." oninput="filterFiles(this.value)" />
-          </div>
-          <select class="filter-select" id="fileTypeFilter" onchange="filterFiles(document.getElementById('fileSearch').value)">
-            <option value="">Todos los tipos</option>
-            <option value=".ai">Adobe Illustrator (.ai)</option>
-            <option value=".eps">EPS</option>
-            <option value=".pdf">PDF</option>
-            <option value=".svg">SVG</option>
-          </select>
-        </div>
-        <div class="toolbar-right">
-          <button class="btn-primary" onclick="uploadFile()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
-            Subir Archivo
-          </button>
-        </div>
+    <!-- Plotter Monitor -->
+    <div class="bento-item item-plotter" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; position:relative; overflow:hidden;">
+      <div class="card-header" style="position:absolute; top:1.5rem; left:1.5rem;">
+        <div class="bento-label">ESTADO PLOTTER</div>
+        <div style="font-size:0.65rem; color:var(--accent); font-weight:800; margin-top:4px;">Roland BN-20A · ONLINE</div>
       </div>
-      <div class="table-wrapper">
-        <table class="data-table" id="filesTable">
-          <thead>
-            <tr>
-              <th>Archivo</th><th>Cliente</th><th>Tipo</th><th>Tamaño</th><th>Fecha</th><th>Estado</th><th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="filesTableBody"></tbody>
-        </table>
+      <div class="ring-pulse">
+        <div class="ring-inner" id="plotterProgress">0%</div>
+      </div>
+      <div style="text-align:center;">
+        <div id="plotterStatusText" style="font-size:0.8rem; font-weight:700; color:#fff;">Listo para imprimir</div>
+        <div style="font-size:0.65rem; color:var(--text-dim); margin-top:4px;">Material: Vinilo Mate 1440 DPI</div>
       </div>
     </div>
 
-    <!-- QUEUE PAGE -->
-    <div class="page hidden" id="page-queue">
-      <div class="page-toolbar">
-        <div class="toolbar-left">
-          <h3 style="color:var(--text-secondary);font-size:14px;">Cola activa del plotter</h3>
-        </div>
-        <div class="toolbar-right">
-          <button class="btn-primary" onclick="addToQueue()">+ Agregar a Cola</button>
-        </div>
-      </div>
-      <div class="queue-full-list" id="queueFullList"></div>
-    </div>
-
-    <!-- REMOTE ACCESS PAGE -->
-    <div class="page hidden" id="page-remote">
-      <div class="remote-grid">
-        <div class="remote-card main-remote">
-          <div class="remote-header">
-            <div class="remote-status-dot" id="remoteStatusDot"></div>
-            <div>
-              <h3>Computador Principal — Barranquilla</h3>
-              <p>IP: 192.168.1.100 · Puerto: 3389 · RDP/AnyDesk</p>
-            </div>
-          </div>
-          <div class="remote-screen" id="remoteScreen">
-            <div class="remote-screen-inner">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-              <p>Sesión remota disponible</p>
-              <p class="remote-hint">Conecta vía AnyDesk, TeamViewer o RDP</p>
-            </div>
-          </div>
-          <div class="remote-actions">
-            <button class="btn-primary" onclick="launchRemote('anydesk')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-              Abrir AnyDesk
-            </button>
-            <button class="btn-outline" onclick="launchRemote('teamviewer')">TeamViewer</button>
-            <button class="btn-outline" onclick="launchRemote('rdp')">Escritorio Remoto (RDP)</button>
-          </div>
-        </div>
-        <div class="remote-info-panel">
-          <div class="dash-card">
-            <div class="card-header"><h3>Info del Equipo</h3></div>
-            <div class="info-grid" id="remoteInfoGrid"></div>
-          </div>
-          <div class="dash-card">
-            <div class="card-header"><h3>Software Instalado</h3></div>
-            <div class="software-list" id="softwareList"></div>
-          </div>
-        </div>
+    <!-- Recent Files -->
+    <div class="bento-item item-files">
+      <span class="bento-label">Archivos Recientes</span>
+      <div class="bento-list" id="recentFilesList" style="flex-direction: row; gap: 1rem; overflow-x: auto;">
+        <!-- JS Loaded -->
       </div>
     </div>
 
-    <!-- CLIENTS PAGE -->
-    <div class="page hidden" id="page-clients">
-      <div class="page-toolbar">
-        <div class="toolbar-left">
-          <div class="search-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" placeholder="Buscar cliente..." oninput="filterClients(this.value)" />
-          </div>
-        </div>
-        <div class="toolbar-right">
-          <button class="btn-primary" onclick="addClient()">+ Nuevo Cliente</button>
-        </div>
+    <!-- Activity -->
+    <div class="bento-item item-logs">
+      <span class="bento-label">Actividad del Sistema</span>
+      <div class="bento-list" id="activityFeed">
+        <!-- JS Loaded -->
       </div>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>Cliente</th><th>Empresa</th><th>Proyectos</th><th>Último Trabajo</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="clientsTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- HISTORY PAGE -->
-    <div class="page hidden" id="page-history">
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>#</th><th>Trabajo</th><th>Cliente</th><th>Archivo</th><th>Enviado</th><th>Duración</th><th>Estado</th></tr></thead>
-          <tbody id="historyTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- USERS PAGE -->
-    <div class="page hidden" id="page-users">
-      <div class="page-toolbar">
-        <div class="toolbar-left"><h3 style="color:var(--text-secondary);font-size:14px;">Gestión de accesos del sistema</h3></div>
-        <div class="toolbar-right"><button class="btn-primary" onclick="addUser()">+ Nuevo Usuario</button></div>
-      </div>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Último Acceso</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="usersTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- LOGS PAGE -->
-    <div class="page hidden" id="page-logs">
-      <div class="logs-feed" id="logsFeed"></div>
     </div>
 
   </main>
-</div>
 
-<!-- UPLOAD MODAL -->
-<div class="modal-overlay hidden" id="uploadModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Subir Archivo al Sistema</h3>
-      <button class="modal-close" onclick="closeModal('uploadModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="drop-zone" id="dropZone">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
-        <p>Arrastra archivos aquí o <label for="fileInput" class="file-label">selecciona</label></p>
-        <p class="drop-hint">AI, EPS, PDF, SVG • Máx 500MB</p>
-        <input type="file" id="fileInput" accept=".ai,.eps,.pdf,.svg" multiple hidden onchange="handleFileSelect(this)" />
+  <!-- OTHER PAGES -->
+
+  <div id="page-queue" class="hidden section-page">
+    <div class="page-header"><h2>Cola de Impresión</h2></div>
+    <div id="queueFullList" class="bento-list"></div>
+  </div>
+
+  <div id="page-remote" class="hidden section-page" style="padding: 1.5rem;">
+    <div class="remote-vnc-container" style="display: flex; flex-direction: column; height: calc(100vh - 160px); gap: 1rem;">
+      
+      <!-- Remote Header / Toolbar -->
+      <div class="bento-item" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+           <span class="status-dot" style="background:var(--accent); box-shadow: 0 0 10px var(--accent);"></span>
+           <span style="font-weight: 800; font-size: 0.8rem; letter-spacing: 0.05em;">LIVE: AQUASHIELD-PC-01 · BARRANQUILLA</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+           <button class="btn-icon" title="Pantalla Completa">📂</button>
+           <button class="btn-icon" title="Refrescar">🔄</button>
+           <button class="btn-icon" title="Configurar Estación" onclick="openRemoteSettings()">⚙️</button>
+           <button class="btn-icon btn-delete" title="Desconectar">✕</button>
+        </div>
       </div>
-      <div class="modal-fields">
-        <div class="form-group"><label>Cliente</label><input type="text" id="uploadClient" placeholder="Nombre del cliente" /></div>
-        <div class="form-group"><label>Proyecto</label><input type="text" id="uploadProject" placeholder="Nombre del proyecto" /></div>
-        <div class="form-group"><label>Notas</label><textarea id="uploadNotes" placeholder="Instrucciones para el operador..." rows="3"></textarea></div>
+
+      <!-- Main Workspace -->
+      <div style="display: grid; grid-template-columns: 1fr 300px; gap: 1rem; flex: 1;">
+        
+        <!-- THE SCREEN -->
+        <div class="bento-item" id="remoteWorkspace" style="background: #000; padding: 0; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #1a1a1a;">
+           <div id="vncPlaceholder" style="text-align: center; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at center, #111 0%, #000 100%);">
+              <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">🔒</div>
+              <div style="font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: 0.1em; margin-bottom: 2rem;">SESIÓN ENCRIPTADA · BARRANQUILLA</div>
+              <button onclick="startRemoteSession()" style="background: var(--accent); color: #000; border: none; padding: 1.25rem 3rem; border-radius: 50px; font-weight: 900; letter-spacing: 0.05em; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 255, 170, 0.3); transition: all 0.3s;">
+                INICIAR CONEXIÓN OPERATIVA
+              </button>
+              <div style="margin-top: 2rem; font-size: 0.65rem; color: #444; text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em;">Protocolo: VNC over WebSocket (WSS)</div>
+           </div>
+           <div style="position: absolute; bottom: 2rem; right: 2rem; background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 10px; border: 1px solid #333; display: flex; gap: 1.5rem;">
+              <div style="text-align: center;"><div style="font-size: 0.6rem; color: #666;">LATENCIA</div><div style="font-size: 0.8rem; font-weight: 700; color: var(--accent);">24ms</div></div>
+              <div style="text-align: center;"><div style="font-size: 0.6rem; color: #666;">CALIDAD</div><div style="font-size: 0.8rem; font-weight: 700; color: var(--accent);">4K</div></div>
+           </div>
+        </div>
+
+        <!-- Sidebar Tools -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+           <div class="bento-item" style="padding: 1.25rem;">
+              <div class="bento-label" style="margin-bottom: 1rem;">Consola Operativa</div>
+              <div id="remoteTerminal" style="height: 150px; background: #050505; border-radius: 8px; padding: 0.75rem; font-family: monospace; font-size: 0.65rem; color: #0f0; overflow-y: auto;">
+                 <div>> Sesión iniciada</div>
+                 <div>> Streaming listo</div>
+              </div>
+           </div>
+           <div class="bento-item" style="flex: 1; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div class="bento-label">Software Activo</div>
+              <div id="softwareList" class="bento-list" style="flex: 1; overflow-y: auto;"></div>
+              <hr style="border: 0; border-top: 1px solid #111;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                 <button class="nav-item" style="font-size: 0.6rem; padding: 0.5rem; background:rgba(255,0,0,0.1);" onclick="window.location.href='anydesk:452891302'">ANYDESK (BACKUP)</button>
+                 <button class="nav-item" style="font-size: 0.6rem; padding: 0.5rem; background:rgba(0,0,255,0.1);" onclick="window.location.href='teamviewerapi:connect?remoteid=1092334112'">TV (BACKUP)</button>
+              </div>
+           </div>
+        </div>
+
       </div>
-      <div id="uploadFileList" class="upload-file-list"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-outline" onclick="closeModal('uploadModal')">Cancelar</button>
-      <button class="btn-primary" onclick="confirmUpload()">Subir Archivos</button>
     </div>
   </div>
-</div>
 
-<!-- TOAST CONTAINER -->
-<div class="toast-container" id="toastContainer"></div>
+  <div id="page-clients" class="hidden section-page">
+    <div class="page-header"><h2>Gestión de Clientes</h2></div>
+    <div class="table-wrapper"><table class="data-table"><tbody id="clientsTableBody"></tbody></table></div>
+  </div>
 
-<script src="js/app.js"></script>
+  <div id="page-history" class="hidden section-page">
+    <div class="page-header"><h2>Historial de Trabajos</h2></div>
+    <div class="table-wrapper"><table class="data-table"><tbody id="historyTableBody"></tbody></table></div>
+  </div>
+
+  <div id="page-logs" class="hidden section-page">
+    <div class="page-header"><h2>Logs del Sistema</h2></div>
+    <div id="logsFeed" class="bento-list"></div>
+  </div>
+
+  <!-- UPLOAD MODAL -->
+  <div class="modal-overlay hidden" id="uploadModal">
+    <div class="modal">
+      <div class="card-header">
+        <h3 class="card-title">Subir Nuevo Proyecto</h3>
+        <button onclick="closeModal('uploadModal')" style="background:none; border:none; color:#555; cursor:pointer;">✕</button>
+      </div>
+      <div class="modal-fields">
+        <div class="form-group">
+          <label>Cliente</label>
+          <input type="text" id="uploadClient" placeholder="Nombre" />
+        </div>
+        <div style="margin: 1rem 0;">
+           <button class="nav-item" style="width:100%; background:#111; border:1px solid #333;" onclick="document.getElementById('fileInput').click()">📁 Seleccionar Archivo del PC</button>
+        </div>
+        <div class="form-group">
+          <label>Notas</label>
+          <textarea id="uploadNotes" placeholder="Instrucciones..." rows="3"></textarea>
+        </div>
+        <div id="uploadFileList" style="margin-top:1rem; font-size:0.7rem; color:var(--accent);"></div>
+        <input type="file" id="fileInput" multiple onchange="handleFileSelect(this)" style="display:none;"/>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="confirmUpload()">Procesar Archivo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Files Page -->
+  <div id="page-files" class="hidden section-page">
+    <div class="page-header">
+      <h2>Biblioteca de Marcas</h2>
+      <button class="nav-item" style="background:var(--accent); color:#000; font-weight:800; border:none; padding:0.6rem 1.2rem; cursor:pointer;" onclick="openNewBrandModal()">+ Nueva Marca</button>
+    </div>
+    
+    <div style="display:grid; grid-template-columns: 240px 1fr; gap:1.5rem; height: calc(100vh - 200px);">
+      <!-- Brand Sidebar -->
+      <div class="bento-item" style="padding:1rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.5rem;" id="brandList">
+         <!-- Brands will be loaded here -->
+      </div>
+
+      <!-- File Grid -->
+      <div class="bento-item" style="padding:1.5rem; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+           <h3 id="currentBrandName" style="color:#fff; font-family:'Outfit';">Todos los Archivos</h3>
+           <div style="display:flex; gap:1rem;">
+              <input type="text" placeholder="Buscar en esta marca..." style="background:#000; border:1px solid #222; padding:0.5rem 1rem; color:#fff; border-radius:8px; font-size:0.8rem;">
+              <button class="nav-item" style="padding:0.5rem 1rem; background:#111; border:1px solid #333;" onclick="uploadFile()">↑ Subir Archivo</button>
+           </div>
+        </div>
+        <div id="filesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:1.5rem;">
+           <!-- Files will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings / Admin Page -->
+  <div id="page-settings" class="hidden section-page">
+    <div class="page-header"><h2>Ajustes Globales del Sistema</h2></div>
+    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem;">
+      <!-- Sidebar Tabs -->
+      <div class="bento-item" style="padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <button class="nav-item settings-tab-btn active" onclick="showSettingsTab('workstation', this)">🖥️ Estación Barranquilla</button>
+        <button class="nav-item settings-tab-btn" onclick="showSettingsTab('users', this)">👥 Gestión de Usuarios</button>
+        <button class="nav-item settings-tab-btn" onclick="showSettingsTab('system', this)">🛡️ Seguridad y Logs</button>
+      </div>
+
+        <div id="settings-content" class="bento-item" style="padding: 2rem;">
+          <!-- Workstation Tab -->
+          <div id="workstation-tab">
+            <h3 style="margin-bottom: 1.5rem; color: #fff; font-family: 'Outfit';">Configuración Central de Conexión</h3>
+            <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 2rem;">Ingresa los datos del PC de Barranquilla. Esta configuración se aplicará a todos los usuarios.</p>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 400px;">
+              <div>
+                <label class="bento-label">IP PÚBLICA / HOST</label>
+                <input type="text" id="globalHost" style="width: 100%; background: #000; border: 1px solid #222; padding: 0.8rem; color: #fff; border-radius: 8px; margin-top: 0.5rem;" placeholder="ej: 181.45.XX.XX">
+              </div>
+              <div>
+                <label class="bento-label">PUERTO WEBSOCKIFY</label>
+                <input type="number" id="globalPort" style="width: 100%; background: #000; border: 1px solid #222; padding: 0.8rem; color: #fff; border-radius: 8px; margin-top: 0.5rem;" placeholder="ej: 6080">
+              </div>
+              <div>
+                <label class="bento-label">CONTRASEÑA MAESTRA VNC</label>
+                <input type="password" id="globalPass" style="width: 100%; background: #000; border: 1px solid #222; padding: 0.8rem; color: #fff; border-radius: 8px; margin-top: 0.5rem;" placeholder="••••••••">
+              </div>
+              <button class="nav-item" style="background: var(--accent); color: #000; font-weight: 800; padding: 1rem; margin-top: 1rem; border:none; cursor:pointer;" onclick="saveGlobalSettings()">GUARDAR CONFIGURACIÓN MAESTRA</button>
+            </div>
+          </div>
+
+          <!-- Users Tab -->
+          <div id="users-tab" class="hidden">
+            <h3 style="margin-bottom: 1.5rem; color: #fff; font-family: 'Outfit';">Gestión de Operadores</h3>
+            <div id="settingsUserList" class="bento-list"></div>
+            <button class="nav-item" style="margin-top:2rem; width:100%; background:#111; border:1px dashed #333;" onclick="toast('Función de nuevo usuario en desarrollo', 'info')">+ Crear Nuevo Operador</button>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Remote Settings Modal -->
+  <div id="remoteSettingsModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:400px; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 2rem; border-radius: 20px;">
+      <h3 style="margin-bottom:1.5rem; font-family:'Outfit'; color:#fff;">Configurar Estación</h3>
+      <div style="display:flex; flex-direction:column; gap:1.25rem;">
+        <div>
+          <label class="bento-label">IP Pública / Host</label>
+          <input type="text" id="remoteHost" style="width:100%; background:#000; border:1px solid #222; padding:0.8rem; color:#fff; border-radius:8px; margin-top:0.5rem;" placeholder="ej: 181.45.XX.XX">
+        </div>
+        <div>
+          <label class="bento-label">Puerto VNC/WS</label>
+          <input type="number" id="remotePort" style="width:100%; background:#000; border:1px solid #222; padding:0.8rem; color:#fff; border-radius:8px; margin-top:0.5rem;" placeholder="ej: 6080">
+        </div>
+        <div>
+          <label class="bento-label">Contraseña</label>
+          <input type="password" id="remotePass" style="width:100%; background:#000; border:1px solid #222; padding:0.8rem; color:#fff; border-radius:8px; margin-top:0.5rem;" placeholder="••••••••">
+        </div>
+        <div id="testResult" style="font-size:0.7rem; margin-top:0.5rem;" class="hidden"></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+          <button style="padding:0.8rem; background:#111; color:#666; border:none; border-radius:8px; cursor:pointer;" onclick="closeRemoteSettings()">Cancelar</button>
+          <button style="padding:0.8rem; background:var(--accent); color:#000; border:none; border-radius:8px; font-weight:800; cursor:pointer;" onclick="saveRemoteSettings()">Guardar Config</button>
+        </div>
+        <button style="width:100%; margin-top:1rem; padding:0.6rem; background:transparent; border:1px solid #333; color:#aaa; border-radius:8px; font-size:0.7rem; cursor:pointer;" onclick="testRemoteConnection()">⚡ PROBAR CONEXIÓN AHORA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Brand Modal -->
+  <div id="newBrandModal" class="modal-overlay hidden">
+    <div class="modal" style="max-width:400px; padding: 2rem;">
+      <div class="card-header">
+        <h3 class="card-title">Añadir Nueva Marca</h3>
+        <button onclick="closeModal('newBrandModal')" style="background:none; border:none; color:#555; cursor:pointer;">✕</button>
+      </div>
+      <div class="modal-fields" style="margin: 1.5rem 0;">
+        <div style="margin-bottom:1.5rem;">
+          <label class="bento-label">Nombre de la Marca</label>
+          <input type="text" id="newBrandName" style="width:100%; background:#000; border:1px solid #222; padding:0.8rem; color:#fff; border-radius:8px; margin-top:0.5rem;" placeholder="ej: Tesla, Porsche..." />
+        </div>
+        <div>
+          <label class="bento-label">Emoji/Icono (Opcional)</label>
+          <input type="text" id="newBrandIcon" style="width:100%; background:#000; border:1px solid #222; padding:0.8rem; color:#fff; border-radius:8px; margin-top:0.5rem;" placeholder="ej: 🏎️, ⚡" value="🚗" />
+        </div>
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:flex-end;">
+        <button class="nav-item" style="background:var(--accent); color:#000; font-weight:800; border:none; padding:0.8rem 1.5rem; cursor:pointer;" onclick="saveNewBrand()">CREAR CATEGORÍA</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

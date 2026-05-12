@@ -3,141 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Agua Shield OPS — Sistema de Gestión y Acceso Remoto para Ploteo Vehicular" />
-  <title>Agua Shield OPS — Acceso</title>
+  <title>Aqua Shield — Centro de Operaciones</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;700;900&family=Syncopate:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/login.css" />
 </head>
 <body>
-  <!-- Cinematic Background Slider -->
-  <div class="video-background">
-    <div class="overlay"></div>
-    <div class="bg-slider">
-      <img src="luxury_car_wrap_background.png" alt="Slide 1" class="bg-media active" />
-      <img src="plotter_vinyl.png" alt="Slide 2" class="bg-media" />
-    </div>
+  <!-- Atmospheric Layers -->
+  <div class="master-bg">
+    <div class="grain"></div>
+    <div class="light-bloom bloom-1"></div>
+    <div class="light-bloom bloom-2"></div>
+    <div class="grid-overlay"></div>
+    <!-- Ambient Background Mirror (Blurred) -->
+    <video autoplay muted playsinline class="bg-video-blur">
+      <source src="video_login_1.mp4" type="video/mp4">
+    </video>
+    
+    <!-- Main Sharp Video -->
+    <video autoplay muted playsinline class="main-visual">
+      <source src="video_login_1.mp4" type="video/mp4">
+    </video>
+    
+    <div class="vignette-overlay"></div>
   </div>
 
-  <!-- Scan lines and noise for industrial feel -->
-  <div class="fx-overlay"></div>
-
-  <div class="login-wrapper">
-    <!-- Top Brand Header -->
-    <header class="main-header">
-      <div class="logo-container">
-        <img src="logo-transparent.png" alt="Agua Shield" class="main-logo" />
-      </div>
-      <div class="header-divider"></div>
-      <div class="system-tag">
-        <span class="tag-label">AGUA SHIELD</span>
-        <span class="tag-version">PREMIUM OPS v2.1</span>
-      </div>
-    </header>
-
-    <main class="login-main">
-      <div class="content-left">
-        <h1 class="hero-title">
-          <span class="line-1">Precision</span>
-          <span class="line-2 highlight">Performance</span>
-          <span class="line-3">Protection</span>
-        </h1>
-        <p class="hero-desc">Gestión operativa de alto nivel para ploteo y protección vehicular de lujo. Control remoto, cola de impresión y monitoreo industrial.</p>
+  <main class="ops-layout">
+    <!-- Brand Visual Section -->
+    <section class="visual-pane">
+      <div class="brand-center">
+        <div class="hero-brand">
+          <div class="logo-shimmer">
+            <img src="logo-transparent.png" alt="Aqua Shield" class="main-logo-hero" />
+          </div>
+          <div class="brand-titles">
+            <h1 class="glitch-text" data-text="AQUA SHIELD">AQUA SHIELD</h1>
+            <h2 class="sub-text">PROTECCIÓN VEHICULAR PREMIUM</h2>
+          </div>
+        </div>
         
-        <div class="quick-stats">
-          <div class="q-stat">
-            <span class="q-num">2.8k</span>
-            <span class="q-label">Archivos</span>
+        <div class="system-status">
+          <div class="status-item">
+            <span class="label">UBICACIÓN</span>
+            <span class="val">MEDELLÍN — BARRANQUILLA</span>
           </div>
-          <div class="q-stat">
-            <span class="q-num">1.2k</span>
-            <span class="q-label">Trabajos</span>
-          </div>
-          <div class="q-stat">
-            <span class="q-num">Baq</span>
-            <span class="q-label">HQ</span>
+          <div class="status-item">
+            <span class="label">ESTADO</span>
+            <span class="val online">OPERACIONAL</span>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="content-right">
-        <div class="glass-card">
-          <div class="card-glow"></div>
-          <div class="form-header">
-            <div class="lock-circle">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-            </div>
-            <h2>Acceso Seguro</h2>
-            <p>SISTEMA DE GESTIÓN OPERATIVA</p>
+    <!-- Interactive Login Section -->
+    <section class="login-pane">
+      <div class="glass-terminal">
+        <div class="terminal-header">
+          <div class="security-seal">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div class="terminal-title">
+            <h3>ACCESO SEGURO</h3>
+            <p>INGRESE CREDENCIALES DE OPERADOR</p>
+          </div>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)" class="terminal-form">
+          <div class="input-container">
+            <input type="text" id="username" required placeholder=" " autocomplete="username" />
+            <label>ID DE OPERADOR</label>
+            <div class="accent-bar"></div>
           </div>
 
-          <form id="loginForm" onsubmit="handleLogin(event)">
-            <div class="input-group">
-              <label for="username">USUARIO</label>
-              <div class="field-container">
-                <input type="text" id="username" placeholder="usuario@aguashield.co" required autocomplete="username" />
-                <div class="field-focus"></div>
-              </div>
-            </div>
+          <div class="input-container">
+            <input type="password" id="password" required placeholder=" " autocomplete="current-password" />
+            <label>CLAVE DE ACCESO</label>
+            <div class="accent-bar"></div>
+          </div>
 
-            <div class="input-group">
-              <label for="password">CONTRASEÑA</label>
-              <div class="field-container">
-                <input type="password" id="password" placeholder="••••••••••" required autocomplete="current-password" />
-                <div class="field-focus"></div>
-              </div>
-            </div>
+          <div class="form-extras">
+            <label class="toggle-switch">
+              <input type="checkbox" checked />
+              <span class="slider"></span>
+              Mantener activo
+            </label>
+            <a href="#" class="forgot-btn">¿Problemas de acceso?</a>
+          </div>
 
-            <div class="form-actions">
-              <label class="remember">
-                <input type="checkbox" />
-                <span class="check-box"></span>
-                Mantener sesión
-              </label>
-              <a href="#" class="forgot">¿Olvidaste el acceso?</a>
-            </div>
+          <div id="loginAlert" class="error-log"></div>
 
-            <div class="login-alert" id="loginAlert"></div>
+          <button type="submit" id="btnLogin" class="cmd-btn">
+            <span class="btn-shine"></span>
+            <span class="btn-text">INICIALIZAR SISTEMA</span>
+            <div class="btn-spinner" id="btnLoader"></div>
+          </button>
+        </form>
 
-            <button type="submit" class="btn-submit" id="btnLogin">
-              <span class="btn-label">ENTRAR AL SISTEMA</span>
-              <div class="btn-loader" id="btnLoader"></div>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </form>
-
-          <footer class="card-footer">
-            <div class="shield-badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              ENCRIPTADO AES-256
-            </div>
-            <p>© 2026 Agua Shield OPS</p>
-          </footer>
-        </div>
+        <footer class="terminal-footer">
+          <div class="footer-line"></div>
+          <div class="footer-info">
+            <span>AQ-OPS v2.1.0</span>
+            <span class="encryption">ENCRIPTACIÓN AES-256 BIT ACTIVA</span>
+          </div>
+        </footer>
       </div>
-    </main>
-
-    <footer class="main-footer">
-      <div class="footer-left">
-        <div class="status-indicator">
-          <div class="status-dot pulsing"></div>
-          <span>SISTEMA EN LÍNEA — BARRANQUILLA HQ</span>
-        </div>
-      </div>
-      <div class="footer-right">
-        <div class="social-icons">
-          <!-- Placeholder for icons if needed -->
-        </div>
-      </div>
-    </footer>
-  </div>
+    </section>
+  </main>
 
   <script src="js/login.js"></script>
 </body>
