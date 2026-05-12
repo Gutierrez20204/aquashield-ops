@@ -56,5 +56,20 @@ function showAlert(msg, type) {
   alert.className = `login-alert ${type}`;
 }
 
+// ---- Background Slider Logic ----
+function initBgSlider() {
+  const slides = document.querySelectorAll('.bg-media');
+  let current = 0;
+  
+  if (slides.length <= 1) return;
+  
+  setInterval(() => {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }, 6000);
+}
+
 // Typing sounds or micro-interactions could be added here
+document.addEventListener('DOMContentLoaded', initBgSlider);
 console.log('🛡 AGUA SHIELD OPS — Core Security Module Initialized');

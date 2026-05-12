@@ -40,12 +40,26 @@ body {
 }
 
 .bg-media {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: brightness(0.4) contrast(1.1);
-  transform: scale(1.05);
-  animation: bgZoom 30s infinite alternate ease-in-out;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+  transform-origin: center;
+}
+
+.bg-media.active {
+  opacity: 1;
+  animation: kenBurns 12s infinite alternate ease-in-out;
+}
+
+@keyframes kenBurns {
+  0% { transform: scale(1.1) translate(0, 0); }
+  100% { transform: scale(1.3) translate(-2%, -2%); }
 }
 
 .overlay {
@@ -54,13 +68,8 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.8) 100%);
+  background: radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.85) 100%);
   z-index: 1;
-}
-
-@keyframes bgZoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.1); }
 }
 
 .fx-overlay {
@@ -97,12 +106,20 @@ body {
 }
 
 .logo-container {
-  height: 60px;
+  height: 80px;
+  display: flex;
+  align-items: center;
 }
 
 .main-logo {
   height: 100%;
-  filter: drop-shadow(0 0 15px rgba(0, 136, 255, 0.3));
+  filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.4));
+  animation: logoFloat 4s infinite ease-in-out;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.02); }
 }
 
 .header-divider {
@@ -192,15 +209,15 @@ body {
 
 /* Content Right - Card */
 .glass-card {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  padding: 3rem;
+  background: rgba(13, 17, 23, 0.4);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  padding: 3.5rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255,255,255,0.02);
 }
 
 .card-glow {
