@@ -39,8 +39,17 @@ router.put('/:id', requireAuth, (req, res) => {
 });
 
 router.delete('/:id', requireAuth, (req, res) => {
-  run('DELETE FROM clients WHERE id=?', [req.params.id]);
-  res.json({ message:'Cliente eliminado' });
+  const clientId = req.params.id;
+  
+  // Manual Cascade Delete (Cleaning up related records to avoid orphans)
+  run('DELETE FROM queue WHERE file_id IN (SELECT id FROM files WHERE client_id=?)', [clientId]);
+  run('DELETE FROM files WHERE client_id=?', [clientId]);
+  run('DELETE FROM history WHERE client_id=?', [clientId]);
+  run('DELETE FROM clients WHERE id=?', [clientId]);
+  
+  run('INSERT INTO logs (level,message,user_id) VALUES (?,?,?)', ['warn', `Cliente eliminado (ID: ${clientId}) y sus datos asociados`, req.user.id]);
+  
+  res.json({ message: 'Cliente y datos asociados eliminados con éxito' });
 });
 
 module.exports = router;

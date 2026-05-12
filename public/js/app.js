@@ -375,23 +375,106 @@ async function deleteFromQueue(id) {
 }
 
 // ---- CLIENTS ----
+function openNewClientModal() {
+  document.getElementById('editClientId').value = '';
+  document.getElementById('clientName').value = '';
+  document.getElementById('clientCompany').value = '';
+  document.getElementById('clientEmail').value = '';
+  document.getElementById('clientModalTitle').textContent = 'Registrar Nuevo Cliente';
+  document.getElementById('newClientModal').classList.remove('hidden');
+}
+
+async function saveClient() {
+  const id = document.getElementById('editClientId').value;
+  const name = document.getElementById('clientName').value.trim();
+  const company = document.getElementById('clientCompany').value.trim();
+  const email = document.getElementById('clientEmail').value.trim();
+  const status = document.getElementById('clientStatus').value;
+
+  if (!name || !company) return toast('Nombre y Empresa son obligatorios', 'err');
+
+  try {
+    const url = id ? `/api/clients/${id}` : '/api/clients';
+    const method = id ? 'PUT' : 'POST';
+    
+    const res = await fetch(url, {
+      method,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${asToken}`
+      },
+      body: JSON.stringify({ name, company, email, status })
+    });
+    
+    if (res.ok) {
+      toast(id ? 'Cliente actualizado' : 'Cliente registrado', 'success');
+      closeModal('newClientModal');
+      renderClients();
+      renderDashboard();
+    }
+  } catch (e) {
+    toast('Error en el proceso', 'err');
+  }
+}
+
+async function editClient(id) {
+  try {
+    const c = await apiFetch(`/api/clients/${id}`);
+    document.getElementById('editClientId').value = c.id;
+    document.getElementById('clientName').value = c.name;
+    document.getElementById('clientCompany').value = c.company;
+    document.getElementById('clientEmail').value = c.email || '';
+    document.getElementById('clientStatus').value = c.status;
+    document.getElementById('clientModalTitle').textContent = 'Editar Cliente';
+    document.getElementById('newClientModal').classList.remove('hidden');
+  } catch (e) { toast('Error al cargar datos', 'err'); }
+}
+
+async function deleteClient(id) {
+  if (!confirm('¿Estás seguro de eliminar este cliente? Se borrarán sus datos asociados.')) return;
+  try {
+    const response = await fetch(`/api/clients/${id}`, { 
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${sessionStorage.getItem('as_token')}` }
+    });
+
+    const data = await response.json();
+    
+    if (response.ok) {
+      toast('✅ Cliente eliminado con éxito', 'success');
+      renderClients();
+      renderDashboard();
+    } else {
+      toast(`❌ Error del servidor: ${data.error || 'No se pudo borrar'}`, 'err');
+    }
+  } catch (e) { 
+    console.error("Error al borrar:", e);
+    toast('⚠️ Error de conexión con el núcleo', 'err'); 
+  }
+}
+
 async function renderClients() {
   try {
     const clients = await apiFetch('/api/clients');
     const clientsBody = document.getElementById('clientsTableBody');
     if (clientsBody) {
-      const table = clientsBody.closest('table');
-      if (table && !table.querySelector('thead')) {
-        table.insertAdjacentHTML('afterbegin', `<thead><tr><th>Cliente / Empresa</th><th>Contacto</th><th>Estado</th><th>Acciones</th></tr></thead>`);
-      }
       clientsBody.innerHTML = clients.map(c => `
         <tr>
-          <td style="font-weight:700;">${c.name}</td>
-          <td style="color:var(--text-dim);">${c.email || 'Sin correo'}</td>
-          <td><span class="status-dot" style="background:${c.status === 'active' ? 'var(--accent)' : '#ef4444'}"></span> ${c.status === 'active' ? 'Activo' : 'Inactivo'}</td>
+          <td style="padding:1.2rem 1rem;">
+            <div style="font-weight:700; color:#fff; font-size:0.9rem; font-family:'Outfit';">${c.name}</div>
+            <div style="font-size:0.65rem; color:#555; text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">${c.company}</div>
+          </td>
+          <td style="color:var(--text-dim); font-size:0.8rem;">${c.email || 'Sin correo'}</td>
           <td>
-            <button class="btn-icon" onclick="editClient(${c.id})">✏️</button>
-            <button class="btn-icon btn-delete" onclick="deleteClient(${c.id})">✕</button>
+            <span style="font-size:0.6rem; background: ${c.status === 'active' ? 'rgba(0,255,170,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${c.status === 'active' ? 'var(--accent)' : '#ef4444'}; padding:4px 10px; border-radius:6px; font-weight:800; text-transform:uppercase;">
+              ${c.status === 'active' ? '● ACTIVO' : '○ INACTIVO'}
+            </span>
+          </td>
+          <td style="text-align:right;">
+            <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+              <button class="btn-icon" style="width:36px; height:36px;" onclick="editClient(${c.id})">✏️</button>
+              <button class="btn-icon btn-delete" style="width:36px; height:36px;" onclick="deleteClient(${c.id})">✕</button>
+            </div>
           </td>
         </tr>`).join('');
     }
@@ -505,21 +588,25 @@ async function renderRemote() {
     window.addEventListener('keydown', (e) => {
       if (document.getElementById('page-remote').classList.contains('hidden')) return;
       socket.emit('remote-input', { type: 'key', key: e.key });
+    });
   }
 
   // Common software list rendering
-  swList.innerHTML = [
-    { name:'Adobe Illustrator', ver:'2024', status:'Normal' },
-    { name:'FlexiSIGN-PRO', ver:'v12.2', status:'Activo' },
-    { name:'Roland VersaWorks', ver:'v6.4', status:'Idle' }
-  ].map(s => `
-    <div class="list-item" style="padding:0.6rem 1rem; margin-bottom:4px;">
-      <div style="flex:1">
-        <div style="font-weight:700; color:#fff; font-size:0.8rem;">${s.name}</div>
-        <div style="font-size:0.6rem; color:var(--text-dim);">${s.ver}</div>
-      </div>
-      <div style="font-size:0.6rem; font-weight:800; color:var(--accent); text-transform:uppercase;">${s.status}</div>
-    </div>`).join('');
+  const swList = document.getElementById('softwareList');
+  if (swList) {
+    swList.innerHTML = [
+      { name:'Adobe Illustrator', ver:'2024', status:'Normal' },
+      { name:'FlexiSIGN-PRO', ver:'v12.2', status:'Activo' },
+      { name:'Roland VersaWorks', ver:'v6.4', status:'Idle' }
+    ].map(s => `
+      <div class="list-item" style="padding:0.6rem 1rem; margin-bottom:4px;">
+        <div style="flex:1">
+          <div style="font-weight:700; color:#fff; font-size:0.8rem;">${s.name}</div>
+          <div style="font-size:0.6rem; color:var(--text-dim);">${s.ver}</div>
+        </div>
+        <div style="font-size:0.6rem; font-weight:800; color:var(--accent); text-transform:uppercase;">${s.status}</div>
+      </div>`).join('');
+  }
 }
   
 function startRemoteSession() {
