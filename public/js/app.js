@@ -261,8 +261,12 @@ async function renderFilesGrid() {
   const grid = document.getElementById('filesGrid');
   if (!grid) return;
 
+  const q = document.getElementById('fileSearchInput')?.value || '';
+
   try {
-    const url = currentBrandId ? `/api/files?brand_id=${currentBrandId}` : '/api/files';
+    let url = currentBrandId ? `/api/files?brand_id=${currentBrandId}` : '/api/files';
+    if (q) url += (url.includes('?') ? '&' : '?') + `q=${encodeURIComponent(q)}`;
+    
     const files = await apiFetch(url);
     
     if (files.length === 0) {

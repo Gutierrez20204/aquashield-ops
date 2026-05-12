@@ -268,7 +268,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
            <h3 id="currentBrandName" style="color:#fff; font-family:'Outfit';">Todos los Archivos</h3>
            <div style="display:flex; gap:1rem;">
-              <input type="text" placeholder="Buscar en esta marca..." style="background:#000; border:1px solid #222; padding:0.5rem 1rem; color:#fff; border-radius:8px; font-size:0.8rem;">
+              <input type="text" id="fileSearchInput" placeholder="Buscar en esta marca..." style="background:#000; border:1px solid #222; padding:0.5rem 1rem; color:#fff; border-radius:8px; font-size:0.8rem;" oninput="renderFilesGrid()">
               <button class="nav-item" style="padding:0.5rem 1rem; background:#111; border:1px solid #333;" onclick="uploadFile()">↑ Subir Archivo</button>
            </div>
         </div>
