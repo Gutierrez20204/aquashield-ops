@@ -432,9 +432,8 @@ window.editClient = async function(id) {
 };
 
 window.ejecutarEliminacionMaestra = async function(id) {
-  console.log("🚀 DISPARANDO ELIMINACIÓN PARA ID:", id);
+  if (!confirm('¿ESTÁS SEGURO? Se borrarán todos los archivos y trabajos de este cliente de forma permanente.')) return;
   
-  // Eliminamos el confirm() momentáneamente para probar si es el bloqueador
   try {
     const response = await fetch(`/api/clients/${id}`, { 
       method: 'DELETE',
