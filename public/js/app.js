@@ -42,6 +42,18 @@ async function apiFetch(url, options = {}) {
   }
 }
 
+// ---- Helpers ----
+function formatStatus(s) {
+  const map = {
+    'pending': 'PENDIENTE',
+    'printing': '⚡ IMPRIMIENDO',
+    'done': '✅ FINALIZADO',
+    'error': '❌ ERROR',
+    'queued': '⏳ EN COLA'
+  };
+  return map[s.toLowerCase()] || s.toUpperCase();
+}
+
 // ---- Clock ----
 function updateClock() {
   const now = new Date();
@@ -264,7 +276,7 @@ async function renderFilesGrid() {
           <div style="padding: 8px 12px; background: #111; border: 1px solid #222; border-radius: 6px; font-family: 'Outfit'; font-size: 0.65rem; font-weight: 900; color: #fff; letter-spacing: 0.1em;">
             ${f.filetype.replace('.','').toUpperCase()}
           </div>
-          <span style="font-size: 0.55rem; color: var(--accent); font-weight: 800; text-transform: uppercase;">● ${f.status}</span>
+          <span style="font-size: 0.55rem; color: var(--accent); font-weight: 800; text-transform: uppercase;">● ${formatStatus(f.status)}</span>
         </div>
         
         <div style="flex: 1;">
@@ -341,7 +353,7 @@ async function renderQueueFull() {
                 <td style="color:#888; font-size:0.75rem; font-weight:600;">${q.client_company || 'S/C'}</td>
                 <td>
                   <span style="font-size:0.55rem; background:rgba(245,158,11,0.1); color:#f59e0b; padding:4px 10px; border-radius:8px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase;">
-                    ${q.status === 'printing' ? '⚡ IMPRIMIENDO' : '⏳ EN COLA'}
+                    ${formatStatus(q.status)}
                   </span>
                 </td>
                 <td style="text-align:right;">
@@ -491,7 +503,7 @@ async function renderHistory() {
         <td>${h.client_company}</td>
         <td style="color:var(--text-dim)">${h.filename}</td>
         <td>${new Date(h.created_at).toLocaleDateString()}</td>
-        <td><span class="pill ${h.status}">${h.status}</span></td>
+        <td><span class="pill ${h.status}">${formatStatus(h.status)}</span></td>
       </tr>`).join('');
   } catch (e) {}
 }
