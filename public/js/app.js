@@ -431,10 +431,10 @@ window.editClient = async function(id) {
   } catch (e) { toast('Error al cargar datos', 'err'); }
 };
 
-window.deleteClient = async function(id) {
-  // Alerta de diagnóstico para verificar que el clic funciona
-  if (!confirm('¿ESTÁS SEGURO? Se borrarán todos los archivos y trabajos de este cliente de forma permanente.')) return;
+window.ejecutarEliminacionMaestra = async function(id) {
+  console.log("🚀 DISPARANDO ELIMINACIÓN PARA ID:", id);
   
+  // Eliminamos el confirm() momentáneamente para probar si es el bloqueador
   try {
     const response = await fetch(`/api/clients/${id}`, { 
       method: 'DELETE',
@@ -442,15 +442,14 @@ window.deleteClient = async function(id) {
     });
 
     if (response.ok) {
-      toast('✅ Cliente y datos eliminados', 'success');
+      toast('✅ Cliente eliminado con éxito', 'success');
       renderClients();
       renderDashboard();
     } else {
-      const errData = await response.json();
-      toast(`❌ Error: ${errData.error || 'No permitido'}`, 'err');
+      toast(`❌ Error en servidor`, 'err');
     }
   } catch (e) { 
-    toast('⚠️ Error de conexión', 'err'); 
+    toast('⚠️ Error de red', 'err'); 
   }
 };
 
@@ -474,7 +473,7 @@ async function renderClients() {
           <td style="text-align:right;">
             <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
               <button class="btn-icon" style="width:36px; height:36px;" onclick="editClient(${c.id})">✏️</button>
-              <button class="btn-icon btn-delete" style="width:36px; height:36px;" onclick="deleteClient(${c.id})">✕</button>
+              <button class="btn-icon btn-delete" style="width:36px; height:36px;" onclick="ejecutarEliminacionMaestra(${c.id})">✕</button>
             </div>
           </td>
         </tr>`).join('');
