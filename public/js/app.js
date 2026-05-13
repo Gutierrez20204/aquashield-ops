@@ -564,7 +564,7 @@ async function renderRemote() {
           <div class="bento-item" style="padding: 1.5rem; background: rgba(0,255,170,0.05); border: 1px solid rgba(0,255,170,0.1);"><div class="bento-label">IP PÚBLICA</div><div style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">181.143.220.12</div></div>
           <div class="bento-item" style="padding: 1.5rem; background: rgba(255,255,255,0.05);"><div class="bento-label">PUERTO</div><div style="font-size: 1.5rem; font-weight: 800; color: #fff;">6080</div></div>
         </div>
-        <button class="nav-item" style="margin-top:2rem; width:100%; max-width:500px; background:var(--accent); color:#000; font-weight:800; padding:1.5rem;" onclick="startLiveDemo()">🚀 ACTIVAR SEÑAL REMOTA</button>
+        <button class="nav-item" style="margin-top:2rem; width:100%; max-width:500px; background:var(--accent); color:#000; font-weight:800; padding:1.5rem;" onclick="activarAccesoEnVivo()">🚀 ACTIVAR SEÑAL REMOTA</button>
         <video id="liveVideoDemo" autoplay playsinline style="display:none;"></video>
       </div>
     `;
@@ -574,7 +574,7 @@ async function renderRemote() {
       <div style="width: 100%; height: 100%; display: flex; flex-direction: column; background: #000; overflow: hidden;">
         <div style="padding: 1rem; background: #111; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222;">
            <div style="font-size: 0.75rem; font-weight: 800; color: var(--accent); font-family:'Outfit';">🛰️ ACCESO MAESTRO — ESTACIÓN BARRANQUILLA</div>
-           <button class="nav-item" style="padding: 0.5rem 1rem; font-size: 0.6rem; background: rgba(239, 68, 68, 0.1); color: #ef4444;" onclick="location.reload()">DESCONECTAR</button>
+            <button class="nav-item" style="padding: 0.5rem 1rem; font-size: 0.6rem; background: rgba(239, 68, 68, 0.1); color: #ef4444;" onclick="activarAccesoEnVivo()">ACTIVAR ACCESO EN VIVO</button>
         </div>
         <div id="remoteContainer" style="flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; cursor: crosshair;">
           <img id="remoteVideo" style="width:100%; height:100%; object-fit:contain; background:#000;">
@@ -840,7 +840,7 @@ function launchRemote(app) {
   toast(`Iniciando conexión ${app.toUpperCase()}...`, 'info');
 }
 
-async function startLiveDemo() {
+async function activarAccesoEnVivo() {
   const workspace = document.getElementById('remoteWorkspace');
   try {
     const stream = await navigator.mediaDevices.getDisplayMedia({ 
