@@ -27,6 +27,23 @@ function loadRoutes() {
   app.use('/api/users',   require('./routes/users'));
   app.use('/api/brands',  require('./routes/brands'));
   app.use('/api/logs',    require('./routes/logs'));
+  app.use('/api/chat',    require('./routes/chat'));
+  
+  // System Maintenance
+  app.post('/api/system/wipe', (req, res) => {
+    try {
+      db.run('DELETE FROM clients');
+      db.run('DELETE FROM brands');
+      db.run('DELETE FROM files');
+      db.run('DELETE FROM queue');
+      db.run('DELETE FROM history');
+      db.run('DELETE FROM logs');
+      res.json({ message: 'Sistema reseteado correctamente' });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
   app.use((err, req, res, next) => {
     console.error('[ERROR]', err.message);
@@ -46,6 +63,19 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log('🔗 Cliente conectado:', socket.id);
+
+  // Chat: join personal room
+  socket.on('join-room', (userId) => {
+    socket.join(`user-${userId}`);
+    console.log(`💬 Usuario ${userId} en sala user-${userId}`);
+  });
+
+  // Chat: relay message to recipient's room
+  socket.on('chat-message', (msg) => {
+    if (msg.receiver_id) {
+      io.to(`user-${msg.receiver_id}`).emit('chat-message', msg);
+    }
+  });
   
   // Forward screen frames from operator to admin
   socket.on('screen-frame', (data) => {

@@ -3,6 +3,30 @@
    ==================================================== */
 const socket = io();
 
+// ---- Chat: join personal Socket.io room for real-time messages ----
+let _chatActiveUserId = null;
+let _chatSelectedFile = null;
+
+socket.on('connect', () => {
+  if (asUser?.id) socket.emit('join-room', asUser.id);
+});
+
+socket.on('chat-message', (msg) => {
+  // Show message if this conversation involves current user
+  const isMyConversation =
+    (String(msg.sender_id) === String(asUser.id) && String(msg.receiver_id) === String(_chatActiveUserId)) ||
+    (String(msg.sender_id) === String(_chatActiveUserId) && String(msg.receiver_id) === String(asUser.id));
+
+  if (isMyConversation) {
+    appendChatMessage(msg);
+  }
+  updateChatNavBadge();
+  // Only toast if it's a message FROM someone else (not our own echo)
+  if (String(msg.sender_id) !== String(asUser.id)) {
+    toast(`💬 Nuevo mensaje de ${msg.sender_name}`, 'info');
+  }
+});
+
 // ---- Auth Guard ----
 const asUser = JSON.parse(sessionStorage.getItem('as_user') || 'null');
 const asToken = sessionStorage.getItem('as_token');
@@ -33,6 +57,13 @@ async function apiFetch(url, options = {}) {
   try {
     const response = await fetch(url, { ...options, headers });
     if (response.status === 401) logout();
+
+    // Guard: only parse JSON if the server actually returned JSON
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error(`Ruta no disponible: ${url} — ¿Reiniciaste el servidor?`);
+    }
+
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Error en la petición');
     return data;
@@ -65,8 +96,8 @@ setInterval(updateClock, 1000); updateClock();
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
 // ---- Navigation ----
-const PAGES = ['dashboard','files','queue','remote','clients','history','users','logs','settings'];
-const PAGE_TITLES = { dashboard:'Dashboard Principal', files:'Gestión de Archivos', queue:'Cola de Impresión', remote:'Acceso Remoto', clients:'Clientes', history:'Historial de Trabajos', users:'Usuarios del Sistema', logs:'Logs del Sistema', settings:'Ajustes del Sistema' };
+const PAGES = ['dashboard','files','queue','remote','clients','history','users','logs','settings','chat'];
+const PAGE_TITLES = { dashboard:'Dashboard Principal', files:'Gestión de Archivos', queue:'Cola de Impresión', remote:'Acceso Remoto', clients:'Clientes', history:'Historial de Trabajos', users:'Usuarios del Sistema', logs:'Logs del Sistema', settings:'Ajustes del Sistema', chat:'Canal de Soporte' };
 
 function navigateTo(page) {
   if (page === 'logout') {
@@ -92,6 +123,7 @@ function navigateTo(page) {
   if (page === 'logs') renderLogs();
   if (page === 'settings') renderSettings();
   if (page === 'remote') renderRemote();
+  if (page === 'chat') renderChatUsers();
 }
 
 // ---- Role-Based UI Restriction ----
@@ -275,7 +307,9 @@ async function renderFilesGrid() {
     }
 
     grid.innerHTML = files.map(f => `
-      <div class="bento-item" style="padding: 1.5rem; border-radius: 12px; background: #0a0a0a; border: 1px solid #1a1a1a; display: flex; flex-direction: column; gap: 1rem;">
+      <div class="bento-item" style="padding: 1.5rem; border-radius: 12px; background: #0a0a0a; border: 1px solid #1a1a1a; display: flex; flex-direction: column; gap: 1rem; position: relative;">
+        <button onclick="deleteFile(${f.id}, '${f.original}')" style="position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; z-index: 10;">✕</button>
+        
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
           <div style="padding: 8px 12px; background: #111; border: 1px solid #222; border-radius: 6px; font-family: 'Outfit'; font-size: 0.65rem; font-weight: 900; color: #fff; letter-spacing: 0.1em;">
             ${f.filetype.replace('.','').toUpperCase()}
@@ -296,6 +330,23 @@ async function renderFilesGrid() {
     `).join('');
   } catch (e) {
     console.error("Error loading files:", e);
+  }
+}
+
+async function deleteFile(id, name) {
+  const confirmed = await showConfirm(
+    'ELIMINAR ARCHIVO',
+    `¿Estás seguro de que deseas eliminar permanentemente el archivo "<strong>${name}</strong>"? Esta acción no se puede deshacer.`
+  );
+  
+  if (!confirmed) return;
+  
+  try {
+    await apiFetch(`/api/files/${id}`, { method: 'DELETE' });
+    toast('Archivo eliminado', 'success');
+    renderFilesGrid();
+  } catch (e) {
+    toast('Error al eliminar archivo', 'error');
   }
 }
 
@@ -791,6 +842,74 @@ function saveGlobalSettings() {
   toast('CONFIGURACIÓN MAESTRA ACTUALIZADA', 'success');
 }
 
+async function forceSystemWipe() {
+  const confirmed = await showConfirm(
+    'RESETEO DE FÁBRICA',
+    '⚠️ <strong>ATENCIÓN:</strong> Vas a borrar TODOS los datos de la base de datos local. Esto dejará el sistema en blanco para producción.'
+  );
+  
+  if (!confirmed) return;
+  
+  try {
+    // 1. Intentar limpieza en el servidor
+    const res = await fetch('/api/system/wipe', { 
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${sessionStorage.getItem('as_token')}` }
+    });
+    
+    // 2. Limpieza de emergencia en el navegador (por si el servidor no reinició)
+    sessionStorage.clear();
+    localStorage.removeItem('currentBrandId');
+    localStorage.removeItem('currentBrandName');
+    
+    if (res.ok) {
+      toast('SISTEMA FORMATEADO CORRECTAMENTE', 'success');
+    } else {
+      toast('Limpieza parcial: Reinicia tu servidor local para completar.', 'warn');
+    }
+    
+    setTimeout(() => location.href = '/', 1500);
+  } catch (e) {
+    console.error(e);
+    toast('Error de conexión: ¿Reiniciaste el servidor?', 'error');
+  }
+}
+
+// Custom Confirm Helper
+function showConfirm(title, message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('confirmModal');
+    const titleEl = document.getElementById('confirmTitle');
+    const msgEl = document.getElementById('confirmMessage');
+    const okBtn = document.getElementById('confirmOk');
+    const cancelBtn = document.getElementById('confirmCancel');
+
+    titleEl.textContent = title;
+    msgEl.innerHTML = message;
+    modal.classList.remove('hidden');
+
+    const handleOk = () => {
+      modal.classList.add('hidden');
+      cleanup();
+      resolve(true);
+    };
+
+    const handleCancel = () => {
+      modal.classList.add('hidden');
+      cleanup();
+      resolve(false);
+    };
+
+    const cleanup = () => {
+      okBtn.removeEventListener('click', handleOk);
+      cancelBtn.removeEventListener('click', handleCancel);
+    };
+
+    okBtn.addEventListener('click', handleOk);
+    cancelBtn.addEventListener('click', handleCancel);
+  });
+}
+
 async function testRemoteConnection() {
   const host = document.getElementById('remoteHost').value;
   const port = document.getElementById('remotePort').value;
@@ -957,3 +1076,188 @@ function toast(msg, type = 'info') {
 // ---- INIT ----
 renderDashboard();
 renderRemote();
+updateChatNavBadge();
+setInterval(updateChatNavBadge, 15000);
+
+// ======================================================
+// CHAT SYSTEM
+// ======================================================
+
+async function renderChatUsers() {
+  const container = document.getElementById('chatUserItems');
+  if (!container) return;
+  container.innerHTML = '<div style="padding:1rem;color:#555;font-size:0.75rem;">Cargando...</div>';
+
+  try {
+    const users = await apiFetch('/api/chat/users');
+    if (!users.length) {
+      container.innerHTML = '<div style="padding:1.5rem;color:#444;font-size:0.75rem;text-align:center;">No hay otros usuarios registrados.</div>';
+      return;
+    }
+    container.innerHTML = users.map(u => `
+      <div onclick="openChatWith(${u.id}, '${u.name}', '${u.role}')"
+           id="chat-user-item-${u.id}"
+           style="padding:1rem 1.5rem;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:0.75rem;transition:background 0.2s;"
+           onmouseover="this.style.background='rgba(255,255,255,0.03)'"
+           onmouseout="this.style.background='transparent'">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,255,170,0.08);border:1px solid rgba(0,255,170,0.15);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.8rem;color:var(--accent);flex-shrink:0;">${u.name[0].toUpperCase()}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;color:#fff;font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.name}</div>
+          <div style="font-size:0.6rem;color:var(--text-dim);text-transform:uppercase;">${u.role}</div>
+        </div>
+        ${u.unread > 0 ? `<span style="background:#ef4444;color:#fff;font-size:0.55rem;font-weight:900;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;">${u.unread}</span>` : ''}
+      </div>
+    `).join('');
+  } catch(e) {
+    container.innerHTML = '<div style="padding:1rem;color:#ef4444;font-size:0.75rem;">Error cargando usuarios.</div>';
+  }
+}
+
+async function openChatWith(userId, name, role) {
+  _chatActiveUserId = userId;
+
+  // Highlight selected user
+  document.querySelectorAll('[id^="chat-user-item-"]').forEach(el => el.style.background = 'transparent');
+  const item = document.getElementById(`chat-user-item-${userId}`);
+  if (item) item.style.background = 'rgba(0,255,170,0.05)';
+
+  // Update header
+  document.getElementById('chatHeaderAvatar').textContent = name[0].toUpperCase();
+  document.getElementById('chatHeaderName').textContent = name;
+  document.getElementById('chatHeaderRole').textContent = role.toUpperCase();
+
+  // Load history
+  const box = document.getElementById('chatMessages');
+  box.innerHTML = '<div style="color:#555;font-size:0.75rem;text-align:center;padding:2rem;">Cargando mensajes...</div>';
+
+  try {
+    const msgs = await apiFetch(`/api/chat/history/${userId}`);
+    box.innerHTML = '';
+    if (!msgs.length) {
+      box.innerHTML = '<div data-empty style="color:#444;font-size:0.75rem;text-align:center;padding:2rem;">No hay mensajes aún. ¡Empieza la conversación!</div>';
+    } else {
+      msgs.forEach(m => appendChatMessage(m, false));
+    }
+    box.scrollTop = box.scrollHeight;
+    renderChatUsers(); // refresh unread badges
+  } catch(e) {
+    box.innerHTML = '<div style="color:#ef4444;font-size:0.75rem;padding:1rem;">Error al cargar mensajes.</div>';
+  }
+}
+
+function appendChatMessage(msg, scroll = true) {
+  const box = document.getElementById('chatMessages');
+  if (!box) return;
+
+  // Clear empty-state placeholder if present
+  const empty = box.querySelector('[data-empty]');
+  if (empty) empty.remove();
+
+  const isMine = String(msg.sender_id) === String(asUser.id);
+  const time = new Date(msg.created_at).toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
+  const isImage = msg.file_type && ['jpg','jpeg','png','gif','webp','svg'].includes(msg.file_type.toLowerCase());
+
+  let fileHtml = '';
+  if (msg.file_path) {
+    if (isImage) {
+      fileHtml = `<img src="${msg.file_path}" alt="${msg.file_name}" style="max-width:260px;border-radius:8px;display:block;margin-top:${msg.body?'0.5rem':'0'};cursor:pointer;" onclick="window.open('${msg.file_path}','_blank')">` ;
+    } else {
+      fileHtml = `<a href="${msg.file_path}" target="_blank" download="${msg.file_name}" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--accent);font-size:0.75rem;text-decoration:none;margin-top:${msg.body?'0.5rem':'0'};">&#128206; ${msg.file_name}</a>`;
+    }
+  }
+
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `display:flex;flex-direction:column;align-items:${isMine?'flex-end':'flex-start'};`;
+  bubble.innerHTML = `
+    ${!isMine ? `<div style="font-size:0.6rem;font-weight:700;color:var(--accent);margin-bottom:0.25rem;">${msg.sender_name}</div>` : ''}
+    <div style="max-width:70%;background:${isMine?'rgba(0,255,170,0.1)':'rgba(255,255,255,0.05)'};border:1px solid ${isMine?'rgba(0,255,170,0.2)':'rgba(255,255,255,0.08)'};border-radius:${isMine?'12px 12px 2px 12px':'12px 12px 12px 2px'};padding:0.6rem 1rem;word-break:break-word;">
+      ${msg.body ? `<div style="font-size:0.85rem;color:#fff;line-height:1.5;">${msg.body}</div>` : ''}
+      ${fileHtml}
+    </div>
+    <div style="font-size:0.55rem;color:var(--text-dim);margin-top:0.25rem;">${time}</div>
+  `;
+  box.appendChild(bubble);
+  if (scroll) box.scrollTop = box.scrollHeight;
+}
+
+async function sendChatMessage() {
+  if (!_chatActiveUserId) return toast('Selecciona una conversación', 'warn');
+
+  const input = document.getElementById('chatInput');
+  const body = input.value.trim();
+
+  if (!body && !_chatSelectedFile) return;
+
+  const fd = new FormData();
+  fd.append('receiver_id', _chatActiveUserId);
+  if (body) fd.append('body', body);
+  if (_chatSelectedFile) fd.append('file', _chatSelectedFile);
+
+  input.value = '';
+  input.style.height = 'auto';
+  clearChatFile();
+
+  try {
+    const res = await fetch('/api/chat/send', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${asToken}` },
+      body: fd
+    });
+
+    const ct = res.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) {
+      throw new Error(`Respuesta inesperada del servidor (${res.status})`);
+    }
+
+    const msg = await res.json();
+    if (!res.ok) throw new Error(msg.error || `Error ${res.status}`);
+
+    appendChatMessage(msg);
+    socket.emit('chat-message', msg);
+  } catch(e) {
+    console.error('[CHAT SEND]', e);
+    toast(`Error al enviar: ${e.message}`, 'error');
+  }
+}
+
+function onChatFileSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  _chatSelectedFile = file;
+  document.getElementById('chatFilePreviewName').textContent = `📎 ${file.name}`;
+  document.getElementById('chatFilePreview').classList.remove('hidden');
+  input.value = '';
+}
+
+function clearChatFile() {
+  _chatSelectedFile = null;
+  document.getElementById('chatFilePreview').classList.add('hidden');
+  document.getElementById('chatFilePreviewName').textContent = '';
+}
+
+function chatKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+}
+
+async function updateChatNavBadge() {
+  try {
+    // Use raw fetch so errors never surface as toasts
+    const res = await fetch('/api/chat/unread', {
+      headers: { 'Authorization': `Bearer ${asToken}` }
+    });
+    const ct = res.headers.get('content-type') || '';
+    if (!res.ok || !ct.includes('application/json')) return;
+    const { count } = await res.json();
+    const badge = document.getElementById('chatNavBadge');
+    if (!badge) return;
+    if (count > 0) {
+      badge.textContent = count > 9 ? '9+' : count;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  } catch(e) { /* silencioso — servidor no listo aún */ }
+}
