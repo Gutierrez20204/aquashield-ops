@@ -116,53 +116,28 @@ const SCHEMA = `
 `;
 
 function seed() {
-  const count = get('SELECT COUNT(*) as c FROM users')?.c || 0;
-  if (parseInt(count) > 0) return;
+  // Ejecutar limpieza solo si no se ha activado el modo producción antes
+  const isProd = get('SELECT COUNT(*) as c FROM logs WHERE message LIKE "%PRODUCCIÓN%"')?.c || 0;
+  if (parseInt(isProd) > 0) return;
 
   const h = p => bcrypt.hashSync(p, 10);
   const now = new Date().toISOString().replace('T',' ').slice(0,19);
 
+  // Limpieza agresiva de datos de prueba
+  exec('DELETE FROM users');
+  exec('DELETE FROM clients');
+  exec('DELETE FROM brands');
+  exec('DELETE FROM files');
+  exec('DELETE FROM queue');
+  exec('DELETE FROM history');
+  exec('DELETE FROM logs');
+
+  // Insertar solo accesos autorizados
   run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['sam',          h('admin123'),  'Samuel Santiago', 'admin',    'active', now]);
   run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['operador_baq', h('baq2024'),    'Estación BAQ',    'operator', 'active', now]);
-  run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['design_01',    h('design123'), 'Diseño Senior',   'designer', 'active', now]);
 
-  const clients = [
-    ['Carlos Mendoza','AutoGlass Baq','cmendoza@autoglass.co','3001234567','active'],
-    ['Sandra Ríos','VehiculosTotal','srios@vtotal.co','3109876543','active'],
-    ['Jorge Herrera','JK Autos','jherrera@jkautos.co','3205551234','active'],
-    ['Paola Suárez','Multimarca','psuarez@multimarca.co','3154443322','active'],
-    ['Andrés Palomino','Flota Caribe','apalomino@flotacaribe.co','3006665544','pending'],
-    ['Luisa Ospino','CarsDesign','lospino@carsdesign.co','3119998877','active'],
-    ['Roberto Díaz','Barranquilla Motors','rdiaz@bqmotors.co','3177776655','active'],
-  ];
-  clients.forEach(c => run(`INSERT INTO clients (name,company,email,phone,status) VALUES (?,?,?,?,?)`, c));
-
-  const brands = [
-    ['BMW','🚗'], ['Toyota','🛻'], ['Ford','🚜'], ['Mercedes','🏎️'], ['Audi','🚘']
-  ];
-  brands.forEach(b => run(`INSERT INTO brands (name,icon) VALUES (?,?)`, b));
-
-  const files = [
-    ['bmw_x5_wrap.ai','BMW_X5_wrap.ai','.ai',25500000,1,1,'BMW X5 Wrap Completo','pending',1],
-    ['fordRanger_fullkit.eps','FordRanger_fullkit.eps','.eps',19600000,3,2,'Ford Ranger Kit Lateral','printing',2],
-    ['toyota_hilux_logo.svg','Toyota_Hilux_logo.svg','.svg',1200000,2,5,'Toyota Hilux Logo','pending',3],
-  ];
-  files.forEach(f => run(`INSERT INTO files (filename,original,filetype,size_bytes,brand_id,client_id,project,status,uploaded_by) VALUES (?,?,?,?,?,?,?,?,?)`, f));
-
-  [[2,1,'high','printing'],[1,2,'normal','queued'],[5,3,'urgent','queued'],[4,4,'normal','queued']].forEach(q =>
-    run(`INSERT INTO queue (file_id,position,priority,status) VALUES (?,?,?,?)`, q));
-
-  [
-    ['BMW X5 Wrap Completo',1,1,1,2700,'done'],
-    ['Ford Ranger Kit Lateral',2,2,2,2280,'done'],
-    ['Mazda3 Diseño',3,3,3,1800,'done'],
-    ['Kia Sportage Vinilo',4,4,2,1320,'done'],
-    ['Error comunicación plotter',5,5,2,0,'error'],
-  ].forEach(h2 => run(`INSERT INTO history (job_name,file_id,client_id,sent_by,duration_s,status) VALUES (?,?,?,?,?,?)`, h2));
-
-  run(`INSERT INTO logs (level,message,ip) VALUES (?,?,?)`, ['ok','Sistema iniciado — Aqua Shield OPS v2.1','127.0.0.1']);
-  run(`INSERT INTO logs (level,message,ip) VALUES (?,?,?)`, ['ok','Seed inicial completado','127.0.0.1']);
-  console.log('✅ Base de datos sembrada.');
+  run(`INSERT INTO logs (level,message,ip) VALUES (?,?,?)`, ['ok','Sistema Aqua Shield OPS v2.2.8 — MODO PRODUCCIÓN ACTIVO','127.0.0.1']);
+  console.log('✅ PRODUCCIÓN: Base de datos reseteada y limpia.');
 }
 
 // ── Init (async because sql.js loads WASM) ─────────────
