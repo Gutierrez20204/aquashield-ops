@@ -116,14 +116,10 @@ const SCHEMA = `
 `;
 
 function seed() {
-  // Ejecutar limpieza solo si no se ha activado el modo producción antes
-  const isProd = get('SELECT COUNT(*) as c FROM logs WHERE message LIKE "%PRODUCCIÓN%"')?.c || 0;
-  if (parseInt(isProd) > 0) return;
-
+  // FUERZA BRUTA: Limpiar todo en el próximo inicio para asegurar producción limpia
   const h = p => bcrypt.hashSync(p, 10);
   const now = new Date().toISOString().replace('T',' ').slice(0,19);
 
-  // Limpieza agresiva de datos de prueba
   exec('DELETE FROM users');
   exec('DELETE FROM clients');
   exec('DELETE FROM brands');
@@ -132,12 +128,10 @@ function seed() {
   exec('DELETE FROM history');
   exec('DELETE FROM logs');
 
-  // Insertar solo accesos autorizados
   run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['sam',          h('admin123'),  'Samuel Santiago', 'admin',    'active', now]);
   run(`INSERT INTO users (username,password,name,role,status,last_login) VALUES (?,?,?,?,?,?)`, ['operador_baq', h('baq2024'),    'Estación BAQ',    'operator', 'active', now]);
 
-  run(`INSERT INTO logs (level,message,ip) VALUES (?,?,?)`, ['ok','Sistema Aqua Shield OPS v2.2.8 — MODO PRODUCCIÓN ACTIVO','127.0.0.1']);
-  console.log('✅ PRODUCCIÓN: Base de datos reseteada y limpia.');
+  run(`INSERT INTO logs (level,message,ip) VALUES (?,?,?)`, ['ok','SISTEMA AQUA SHIELD OPS — PRODUCCIÓN NIVEL 0','127.0.0.1']);
 }
 
 // ── Init (async because sql.js loads WASM) ─────────────
