@@ -577,7 +577,7 @@ async function renderRemote() {
            <button class="nav-item" style="padding: 0.5rem 1rem; font-size: 0.6rem; background: rgba(239, 68, 68, 0.1); color: #ef4444;" onclick="location.reload()">DESCONECTAR</button>
         </div>
         <div id="remoteContainer" style="flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; cursor: crosshair;">
-          <video id="remoteVideo" autoplay playsinline style="width:100%; height:100%; object-fit:contain;"></video>
+          <img id="remoteVideo" style="width:100%; height:100%; object-fit:contain; background:#000;">
           <div id="remoteOverlay" style="position: absolute; inset: 0; z-index: 99;"></div>
         </div>
       </div>
@@ -586,11 +586,36 @@ async function renderRemote() {
     const remoteVideo = document.getElementById('remoteVideo');
     const remoteOverlay = document.getElementById('remoteOverlay');
 
-    socket.on('remote-frame', (data) => { remoteVideo.src = data; });
+    // Consolidated Listener for all remote frames
+    socket.on('remote-frame', (data) => { 
+      // Update Full Remote View
+      if (remoteVideo) remoteVideo.src = data; 
+      
+      // Update Dashboard Mini View
+      const ph = document.getElementById('vncPlaceholder');
+      if (ph) {
+        if (!ph.querySelector('#liveRender')) {
+          ph.innerHTML = `
+            <div style="position:absolute; inset:0; background:#000; display:flex; flex-direction:column;">
+              <div style="background:#1a1a1a; padding:4px 10px; display:flex; justify-content:space-between; align-items:center; font-size:0.6rem; color:#888;">
+                 <span>● LIVE STREAM: BARRANQUILLA OPS</span>
+                 <span style="color:var(--accent); font-weight:800;">CONECTADO</span>
+              </div>
+              <img id="liveRender" style="width:100%; height:100%; object-fit:contain; background:#000;">
+            </div>
+          `;
+        }
+        const img = document.getElementById('liveRender');
+        if (img) img.src = data;
+      }
+    });
 
-    remoteOverlay.addEventListener('mousedown', (e) => {
-      const rect = remoteVideo.getBoundingClientRect();
-      socket.emit('remote-input', { type: 'click', x: (e.clientX - rect.left) / rect.width, y: (e.clientY - rect.top) / rect.height, button: e.button });
+    remoteOverlay?.addEventListener('mousedown', (e) => {
+      if (remoteVideo) {
+        const rect = remoteVideo.getBoundingClientRect();
+        socket.emit('remote-input', { type: 'move', x: (e.clientX - rect.left) / rect.width, y: (e.clientY - rect.top) / rect.height });
+        socket.emit('remote-input', { type: 'click', x: (e.clientX - rect.left) / rect.width, y: (e.clientY - rect.top) / rect.height, button: e.button });
+      }
     });
 
     remoteOverlay.addEventListener('mousemove', (e) => {
@@ -827,7 +852,25 @@ async function startLiveDemo() {
     const ctx = canvas.getContext('2d');
     const video = document.createElement('video');
     video.srcObject = stream;
-    video.play();
+    video.onloadedmetadata = () => {
+      video.play();
+      // Frame broadcast loop
+      const broadcastInterval = setInterval(() => {
+        if (video.paused || video.ended) return clearInterval(broadcastInterval);
+        
+        canvas.width = video.videoWidth / 2;
+        canvas.height = video.videoHeight / 2;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const frameData = canvas.toDataURL('image/jpeg', 0.4);
+        socket.emit('screen-frame', frameData);
+        
+        // Local loopback for testing on localhost
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+           socket.emit('remote-frame', frameData); 
+        }
+      }, 100);
+    };
 
     workspace.innerHTML = `
       <div style="position:absolute; inset:0; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -837,18 +880,6 @@ async function startLiveDemo() {
       </div>
     `;
 
-    // Frame broadcast loop
-    const broadcastInterval = setInterval(() => {
-      if (video.paused || video.ended) return clearInterval(broadcastInterval);
-      
-      canvas.width = video.videoWidth / 2; // Resize for performance
-      canvas.height = video.videoHeight / 2;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      const frameData = canvas.toDataURL('image/jpeg', 0.5);
-      socket.emit('screen-frame', frameData);
-    }, 100);
-
     toast('CONEXIÓN PUNTO A PUNTO ESTABLECIDA', 'success');
     
   } catch (err) {
@@ -857,27 +888,7 @@ async function startLiveDemo() {
   }
 }
 
-// Admin Side: Receive and render remote frames
-socket.on('remote-frame', (frame) => {
-  const ph = document.getElementById('vncPlaceholder');
-  if (!ph) return;
-
-  // If it's the first frame, prepare the container
-  if (!ph.querySelector('#liveRender')) {
-    ph.innerHTML = `
-      <div style="position:absolute; inset:0; background:#000; display:flex; flex-direction:column;">
-        <div style="background:#1a1a1a; padding:4px 10px; display:flex; justify-content:space-between; align-items:center; font-size:0.6rem; color:#888;">
-           <span>● LIVE STREAM: BARRANQUILLA OPS</span>
-           <span style="color:var(--accent); font-weight:800;">CONECTADO</span>
-        </div>
-        <img id="liveRender" style="width:100%; height:100%; object-fit:contain; background:#000;">
-      </div>
-    `;
-  }
-
-  const img = document.getElementById('liveRender');
-  if (img) img.src = frame;
-});
+// Removed old redundant listener
 
 function simulateRemoteCursor() {
   const cursor = document.getElementById('remoteCursor');
