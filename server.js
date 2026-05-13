@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health
-app.get('/api/health', (req, res) => res.json({ status:'ok', version:'2.1.0', uptime: Math.round(process.uptime())+'s' }));
+app.get('/api/health', (req, res) => res.json({ status:'ok', version:'2.3.0', uptime: Math.round(process.uptime())+'s' }));
 
 // Routes (loaded after DB init)
 function loadRoutes() {

@@ -1,6 +1,6 @@
 {
   "name": "aquashield-ops",
-  "version": "2.1.0",
+  "version": "2.3.0",
   "description": "Sistema de Gestión Operativa y Acceso Remoto — Agua Shield",
   "main": "server.js",
   "scripts": {
